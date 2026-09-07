@@ -1,0 +1,316 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EmployeeType {
+  TETAP
+  KONTRAK
+  MAGANG
+  KONTRAKTOR
+}
+
+enum EmployeeStatus {
+  AKTIF
+  CUTI
+  ONBOARDING
+  OFFBOARDING
+}
+
+enum PayrollCycleStatus {
+  DRAFT
+  REVIEW_VARIANSI
+  MENUNJU_PERSETUJUAN
+  TERKUNCI
+  DIBAYAR
+}
+
+enum LeaveRequestStatus {
+  MENUNJU
+  DISETUJUI
+  DITOLAK
+}
+
+enum TicketStatus {
+  TERBUKA
+  DALAM_PROSES
+  SELESAI
+}
+
+enum TicketPriority {
+  TINGGI
+  SEDANG
+  RENDAH
+}
+
+enum IntegrationStatus {
+  TERHUBUNG
+  UJI_COBA
+  TERPUTUS
+}
+
+enum WorkflowStepStatus {
+  SELESAI
+  MENUNJU
+  BELUM
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          String    @default("KARYAWAN")
+  entity        String?
+  country       String?
+  department    String?
+  mfaEnabled    Boolean   @default(false)
+  mfaSecret     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  auditLogs     AuditLog[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Entity {
+  id          String   @id @default(cuid())
+  name        String
+  country     String
+  currency    String   @default("IDR")
+  headcount   Int      @default(0)
+  payrollMode String   @default("IN_HOUSE")
+  status      String   @default("AKTIF")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  departments   Department[]
+  costCenters   CostCenter[]
+  payrollCycles PayrollCycle[]
+}
+
+model Department {
+  id          String   @id @default(cuid())
+  name        String
+  entityId    String
+  entity      Entity   @relation(fields: [entityId], references: [id])
+  headcount   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  positions   Position[]
+  costCenters CostCenter[]
+}
+
+model CostCenter {
+  id          String   @id @default(cuid())
+  code        String
+  name        String
+  entityId    String
+  entity      Entity   @relation(fields: [entityId], references: [id])
+  departmentId String?
+  department  Department? @relation(fields: [departmentId], references: [id])
+  owner       String?
+  budgetPct   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Position {
+  id          String   @id @default(cuid())
+  title       String
+  grade       String
+  departmentId String
+  department  Department @relation(fields: [departmentId], references: [id])
+  entityId    String
+  isActive    Boolean  @default(true)
+  headcount   Int      @default(0)
+  vacant      Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Employee {
+  id             String   @id @default(cuid())
+  nik            String?   @unique
+  npwp           String?
+  bpjs           String?
+  name           String
+  email          String
+  phone          String?
+  role           String
+  department     String
+  entity         String
+  country        String
+  location       String
+  type           EmployeeType @default(TETAP)
+  status         EmployeeStatus @default(AKTIF) @map("status")
+  joinDate       DateTime
+  lastDay        DateTime?
+  manager        String?
+  grade          String?
+  salary         Int?
+  currency       String?   @default("IDR")
+  bank           String?
+  account        String?
+  accountVerified Boolean @default(false)
+  taxStatus      String?   @default("TK/0")
+  photoUrl       String?
+  tone           String?   @default("mint")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  employmentHistory EmploymentHistory[]
+  leaveRequests     LeaveRequest[]
+  leaveBalances     LeaveBalance[]
+  attendanceRecords AttendanceRecord[]
+  overtimeRequests  OvertimeRequest[]
+  expenseClaims     Expense[]
+  tickets           Ticket[]
+  payslips          Payslip[]
+}
+
+model EmploymentHistory {
+  id          String   @id @default(cuid())
+  employeeId  String
+  employee    Employee @relation(fields: [employeeId], references: [id])
+  effective   DateTime
+  inputDate   DateTime @default(now())
+  title       String
+  detail      String?
+  reason      String?
+  actor       String?
+  grade       String?
+  salary      Int?
+  entity      String?
+  department  String?
+  position    String?
+  type        EmployeeType?
+  status      EmployeeStatus?
+  createdAt   DateTime @default(now())
+
+  @@index([employeeId, effective])
+}
+
+model PayrollCycle {
+  id          String              @id @default(cuid())
+  period      String
+  entityId    String
+  entity      Entity              @relation(fields: [entityId], references: [id])
+  country     String
+  employees   Int
+  gross       Int                 @default(0)
+  net         Int                 @default(0)
+  tax         Int                 @default(0)
+  social      Int                 @default(0)
+  currency    String              @default("IDR")
+  status      PayrollCycleStatus  @default(DRAFT)
+  progress    Int                 @default(0)
+  anomalies   Int                 @default(0)
+  variance    Float               @default(0)
+  cutoff      DateTime?
+  payDate     DateTime?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  components   PayrollComponent[]
+  results      PayrollResult[]
+  payslips     Payslip[]
+  varianceLogs PayrollVariance[]
+  anomalyRecords PayrollAnomaly[]
+  glJournal    GLJournalEntry[]
+  approvalSteps PayrollApprovalStep[]
+
+  @@index([entityId, period])
+}
+
+model PayrollComponent {
+  id          String   @id @default(cuid())
+  cycleId     String
+  cycle       PayrollCycle @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  label       String
+  amount      Int
+  type        String   // "Penghasilan" | "Potongan"
+  createdAt   DateTime @default(now())
+}
+
+model PayrollResult {
+  id          String   @id @default(cuid())
+  cycleId     String
+  cycle       PayrollCycle @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  employeeId  String
+  gross       Int
+  deduction   Int
+  net         Int
+  tax         Int
+  social      Int
+  currency    String   @default("IDR")
+  status      String   @default("DRAFT")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([cycleId, employeeId])
+}
+
+model Payslip {
+  id          String   @id @default(cuid())
+  cycleId     String?
+  cycle       PayrollCycle? @relation(fields: [cycleId], references: [id])
+  employeeId  String
+  employee    Employee @relation(fields: [employeeId], references: [id])
+  period      String
+  gross       Int
+  deduction   Int
+  net         Int
+  status      String   @default("DRAFT")
+  downloadedAt DateTime?
+  downloadedBy String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([employeeId, period])
+}
+
