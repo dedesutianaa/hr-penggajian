@@ -277,3 +277,292 @@ CREATE TABLE IF NOT EXISTS "GLJournalEntry" (
 );
 
 -- Payroll Approval Steps
+CREATE TABLE IF NOT EXISTS "PayrollApprovalStep" (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  cycleId TEXT NOT NULL,
+  role TEXT NOT NULL,
+  name TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'BELUM',
+  at TEXT,
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT "PayrollApprovalStep_cycleId_fkey" FOREIGN KEY (cycleId) REFERENCES "PayrollCycle"(id) ON DELETE CASCADE
+);
+
+-- Leave Types
+CREATE TABLE IF NOT EXISTS "LeaveType" (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  name TEXT NOT NULL,
+  entityId TEXT NOT NULL,
+  annualDays INTEGER NOT NULL DEFAULT 0,
+  rules TEXT,
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updatedAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT "LeaveType_entityId_fkey" FOREIGN KEY (entityId) REFERENCES "Entity"(id)
+);
+
+-- Leave Requests
+CREATE TABLE IF NOT EXISTS "LeaveRequest" (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  employeeId TEXT NOT NULL,
+  typeId TEXT NOT NULL,
+  startDate TIMESTAMPTZ NOT NULL,
+  endDate TIMESTAMPTZ NOT NULL,
+  days INTEGER NOT NULL DEFAULT 0,
+  status TEXT NOT NULL DEFAULT 'MENUNJU',
+  approverId TEXT,
+  note TEXT,
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updatedAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT "LeaveRequest_employeeId_fkey" FOREIGN KEY (employeeId) REFERENCES "Employee"(id),
+  CONSTRAINT "LeaveRequest_typeId_fkey" FOREIGN KEY (typeId) REFERENCES "LeaveType"(id),
+  CONSTRAINT "LeaveRequest_approverId_fkey" FOREIGN KEY (approverId) REFERENCES "User"(id)
+);
+CREATE INDEX IF NOT EXISTS "LeaveRequest_employeeId_status_idx" ON "LeaveRequest"(employeeId, status);
+
+-- Leave Balances
+CREATE TABLE IF NOT EXISTS "LeaveBalance" (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  employeeId TEXT NOT NULL,
+  typeId TEXT NOT NULL,
+  used INTEGER NOT NULL DEFAULT 0,
+  total INTEGER NOT NULL DEFAULT 0,
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updatedAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT "LeaveBalance_employeeId_fkey" FOREIGN KEY (employeeId) REFERENCES "Employee"(id),
+  CONSTRAINT "LeaveBalance_typeId_fkey" FOREIGN KEY (typeId) REFERENCES "LeaveType"(id),
+  UNIQUE(employeeId, typeId)
+);
+
+-- Attendance Records
+CREATE TABLE IF NOT EXISTS "AttendanceRecord" (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  employeeId TEXT NOT NULL,
+  date TIMESTAMPTZ NOT NULL,
+  clockIn TEXT,
+  clockOut TEXT,
+  location TEXT,
+  status TEXT NOT NULL DEFAULT 'ABSEN',
+  hours TEXT,
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updatedAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT "AttendanceRecord_employeeId_fkey" FOREIGN KEY (employeeId) REFERENCES "Employee"(id)
+);
+CREATE INDEX IF NOT EXISTS "AttendanceRecord_employeeId_date_idx" ON "AttendanceRecord"(employeeId, date);
+
+-- Shifts
+CREATE TABLE IF NOT EXISTS "Shift" (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  name TEXT NOT NULL,
+  startTime TEXT NOT NULL,
+  endTime TEXT NOT NULL,
+  entityId TEXT NOT NULL,
+  headcount INTEGER NOT NULL DEFAULT 0,
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updatedAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT "Shift_entityId_fkey" FOREIGN KEY (entityId) REFERENCES "Entity"(id)
+);
+
+-- Overtime Requests
+CREATE TABLE IF NOT EXISTS "OvertimeRequest" (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  employeeId TEXT NOT NULL,
+  date TIMESTAMPTZ NOT NULL,
+  hours DOUBLE PRECISION NOT NULL DEFAULT 0,
+  reason TEXT,
+  status TEXT NOT NULL DEFAULT 'MENUNJU',
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT "OvertimeRequest_employeeId_fkey" FOREIGN KEY (employeeId) REFERENCES "Employee"(id)
+);
+
+-- Onboarding Tasks
+CREATE TABLE IF NOT EXISTS "OnboardingTask" (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  label TEXT NOT NULL,
+  owner TEXT NOT NULL,
+  done BOOLEAN NOT NULL DEFAULT false,
+  employeeId TEXT,
+  dueDate TIMESTAMPTZ,
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT "OnboardingTask_employeeId_fkey" FOREIGN KEY (employeeId) REFERENCES "Employee"(id)
+);
+
+-- Offboarding Tasks
+CREATE TABLE IF NOT EXISTS "OffboardingTask" (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  label TEXT NOT NULL,
+  owner TEXT NOT NULL,
+  done BOOLEAN NOT NULL DEFAULT false,
+  employeeId TEXT,
+  dueDate TIMESTAMPTZ,
+  clearance TEXT,
+  finalPay TEXT,
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT "OffboardingTask_employeeId_fkey" FOREIGN KEY (employeeId) REFERENCES "Employee"(id)
+);
+
+-- Requisitions
+CREATE TABLE IF NOT EXISTS "Requisition" (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  role TEXT NOT NULL,
+  dept TEXT NOT NULL,
+  entity TEXT NOT NULL,
+  headcount INTEGER NOT NULL DEFAULT 0,
+  stage TEXT NOT NULL,
+  days INTEGER NOT NULL DEFAULT 0,
+  budget TEXT NOT NULL,
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updatedAt TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Candidates
+CREATE TABLE IF NOT EXISTS "Candidate" (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  name TEXT NOT NULL,
+  role TEXT NOT NULL,
+  score INTEGER NOT NULL DEFAULT 0,
+  source TEXT NOT NULL,
+  stageId TEXT NOT NULL,
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT "Candidate_stageId_fkey" FOREIGN KEY (stageId) REFERENCES "Requisition"(id)
+);
+
+-- Interviews
+CREATE TABLE IF NOT EXISTS "Interview" (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  time TEXT NOT NULL,
+  name TEXT NOT NULL,
+  role TEXT NOT NULL,
+  panel TEXT NOT NULL,
+  mode TEXT NOT NULL,
+  date TIMESTAMPTZ NOT NULL,
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Performance Reviews
+CREATE TABLE IF NOT EXISTS "PerformanceReview" (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  employeeId TEXT NOT NULL,
+  cycle TEXT NOT NULL,
+  score DOUBLE PRECISION,
+  status TEXT NOT NULL DEFAULT 'DRAFT',
+  reviewerId TEXT,
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updatedAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT "PerformanceReview_employeeId_fkey" FOREIGN KEY (employeeId) REFERENCES "Employee"(id),
+  CONSTRAINT "PerformanceReview_reviewerId_fkey" FOREIGN KEY (reviewerId) REFERENCES "User"(id)
+);
+
+-- OKRs
+CREATE TABLE IF NOT EXISTS "OKR" (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  title TEXT NOT NULL,
+  owner TEXT NOT NULL,
+  progress INTEGER NOT NULL DEFAULT 0,
+  keyResults TEXT,
+  tone TEXT NOT NULL DEFAULT 'lime',
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updatedAt TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Salary Bands
+CREATE TABLE IF NOT EXISTS "SalaryBand" (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  grade TEXT NOT NULL,
+  title TEXT NOT NULL,
+  min INTEGER NOT NULL DEFAULT 0,
+  mid INTEGER NOT NULL DEFAULT 0,
+  max INTEGER NOT NULL DEFAULT 0,
+  headcount INTEGER NOT NULL DEFAULT 0,
+  compa DOUBLE PRECISION NOT NULL DEFAULT 0,
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updatedAt TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Benefits
+CREATE TABLE IF NOT EXISTS "Benefit" (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  name TEXT NOT NULL,
+  provider TEXT NOT NULL,
+  coverage TEXT NOT NULL,
+  enrolled INTEGER NOT NULL DEFAULT 0,
+  eligible INTEGER NOT NULL DEFAULT 0,
+  tone TEXT NOT NULL DEFAULT 'mint',
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updatedAt TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Expenses
+CREATE TABLE IF NOT EXISTS "Expense" (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  employeeId TEXT NOT NULL,
+  category TEXT NOT NULL,
+  amount INTEGER NOT NULL DEFAULT 0,
+  date TIMESTAMPTZ NOT NULL,
+  status TEXT NOT NULL DEFAULT 'MENUNJU',
+  ocr BOOLEAN NOT NULL DEFAULT false,
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updatedAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT "Expense_employeeId_fkey" FOREIGN KEY (employeeId) REFERENCES "Employee"(id)
+);
+
+-- Tickets
+CREATE TABLE IF NOT EXISTS "Ticket" (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  employeeId TEXT,
+  subject TEXT NOT NULL,
+  category TEXT NOT NULL,
+  priority TEXT NOT NULL DEFAULT 'SEDANG',
+  status TEXT NOT NULL DEFAULT 'TERBUKA',
+  assignee TEXT,
+  sla TEXT,
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updatedAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT "Ticket_employeeId_fkey" FOREIGN KEY (employeeId) REFERENCES "Employee"(id)
+);
+
+-- Audit Logs (Immutable)
+CREATE TABLE IF NOT EXISTS "AuditLog" (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  actorId TEXT,
+  action TEXT NOT NULL,
+  target TEXT,
+  field TEXT,
+  before TEXT,
+  after TEXT,
+  reason TEXT,
+  ipAddress TEXT,
+  userAgent TEXT,
+  CONSTRAINT "AuditLog_actorId_fkey" FOREIGN KEY (actorId) REFERENCES "User"(id)
+);
+CREATE INDEX IF NOT EXISTS "AuditLog_at_idx" ON "AuditLog"(at);
+CREATE INDEX IF NOT EXISTS "AuditLog_actorId_idx" ON "AuditLog"(actorId);
+CREATE INDEX IF NOT EXISTS "AuditLog_action_idx" ON "AuditLog"(action);
+
+-- Integrations
+CREATE TABLE IF NOT EXISTS "Integration" (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  name TEXT NOT NULL,
+  vendor TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'TERHUBUNG',
+  detail TEXT,
+  tone TEXT NOT NULL DEFAULT 'lime',
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updatedAt TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Workflow Configs
+CREATE TABLE IF NOT EXISTS "WorkflowConfig" (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  name TEXT NOT NULL,
+  entityId TEXT,
+  version INTEGER NOT NULL DEFAULT 1,
+  conditions TEXT,
+  sla TEXT,
+  escalation TEXT,
+  environment TEXT NOT NULL DEFAULT 'sandbox',
+  approved BOOLEAN NOT NULL DEFAULT false,
+  createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updatedAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT "WorkflowConfig_entityId_fkey" FOREIGN KEY (entityId) REFERENCES "Entity"(id)
+);
