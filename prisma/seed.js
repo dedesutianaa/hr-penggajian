@@ -243,3 +243,248 @@ async function main() {
       joinDate: new Date('2022-05-02'), manager: 'Nadia Prameswari', grade: 'G4', salary: 16800000,
       currency: 'IDR', bank: 'BCA', account: '•••• 9012', accountVerified: true, taxStatus: 'TK/0',
       photoUrl: null, tone: 'lilac',
+    },
+    {
+      id: 'ayu-005', nik: '00012233445566', npwp: '45.667.112.9-017.000', bpjs: '0001 2233 4455 6',
+      name: 'Ayu Lestari', email: 'ayu.lestari@nexa.co.id', phone: '+62 811 7788 330',
+      role: 'Talent Acquisition Lead', department: 'People & Culture', entity: 'PT Nexa Digital Indonesia',
+      country: 'Indonesia', location: 'Jakarta', type: 'TETAP', status: 'CUTI',
+      joinDate: new Date('2020-11-16'), manager: 'Nadia Prameswari', grade: 'G5', salary: 24000000,
+      currency: 'IDR', bank: 'Mandiri', account: '•••• 3345', accountVerified: true, taxStatus: 'TK/0',
+      photoUrl: null, tone: 'sky',
+    },
+    {
+      id: 'dim-006', nik: '00015566778899', npwp: '52.889.001.6-541.000', bpjs: '0001 5566 7788 9',
+      name: 'Dimas Saputra', email: 'dimas.saputra@nexa.co.id', phone: '+62 878 1122 445',
+      role: 'Data Engineer', department: 'Engineering', entity: 'PT Nexa Digital Indonesia',
+      country: 'Indonesia', location: 'Yogyakarta', type: 'KONTRAK', status: 'AKTIF',
+      joinDate: new Date('2024-02-19'), manager: 'Bagas Nugroho', grade: 'G4', salary: 19500000,
+      currency: 'IDR', bank: 'BRI', account: '•••• 6678', accountVerified: true, taxStatus: 'TK/0',
+      photoUrl: null, tone: 'mint',
+    },
+    {
+      id: 'cla-007', nik: null, npwp: null, bpjs: null,
+      name: 'Clara Wijaya', email: 'clara.wijaya@nexa.sg', phone: '+65 8123 4455',
+      role: 'HR Business Partner', department: 'People & Culture', entity: 'Nexa Singapore Pte Ltd',
+      country: 'Singapura', location: 'Singapore', type: 'TETAP', status: 'AKTIF',
+      joinDate: new Date('2021-09-06'), manager: 'Nadia Prameswari', grade: 'G5', salary: 7800,
+      currency: 'SGD', bank: 'DBS', account: '•••• 1180', accountVerified: true, taxStatus: '—',
+      photoUrl: null, tone: 'lilac',
+    },
+    {
+      id: 'faj-008', nik: '00011122334455', npwp: '03.112.445.7-011.000', bpjs: '0001 1122 3344 5',
+      name: 'Fajar Ramadhan', email: 'fajar.ramadhan@nexa.co.id', phone: '+62 811 3344 556',
+      role: 'Finance Controller', department: 'Finance', entity: 'PT Nexa Digital Indonesia',
+      country: 'Indonesia', location: 'Jakarta', type: 'TETAP', status: 'AKTIF',
+      joinDate: new Date('2018-04-23'), manager: 'Adrian Wibowo', grade: 'G7', salary: 45000000,
+      currency: 'IDR', bank: 'BCA', account: '•••• 8890', accountVerified: true, taxStatus: 'TK/0',
+      photoUrl: null, tone: 'peach',
+    },
+    {
+      id: 'mel-009', nik: null, npwp: null, bpjs: null,
+      name: 'Melati Kusuma', email: 'melati.kusuma@nexa.co.id', phone: '+62 812 6677 889',
+      role: 'Customer Success Associate', department: 'Operations', entity: 'PT Nexa Digital Indonesia',
+      country: 'Indonesia', location: 'Surabaya', type: 'TETAP', status: 'ONBOARDING',
+      joinDate: new Date('2026-11-18'), manager: 'Yoga Hartono', grade: 'G3', salary: 11500000,
+      currency: 'IDR', bank: 'BCA', account: '•••• 5521', accountVerified: false, taxStatus: 'TK/0',
+      photoUrl: null, tone: 'lime',
+    },
+    {
+      id: 'yog-010', nik: '00016677889900', npwp: '61.223.889.4-432.000', bpjs: '0001 6677 8899 0',
+      name: 'Yoga Hartono', email: 'yoga.hartono@nexa.co.id', phone: '+62 813 9900 112',
+      role: 'Operations Supervisor', department: 'Operations', entity: 'PT Nexa Logistik Nusantara',
+      country: 'Indonesia', location: 'Bekasi', type: 'KONTRAK', status: 'AKTIF',
+      joinDate: new Date('2023-08-14'), manager: 'Fajar Ramadhan', grade: 'G3', salary: 9800000,
+      currency: 'IDR', bank: 'BRI', account: '•••• 7712', accountVerified: true, taxStatus: 'TK/0',
+      photoUrl: null, tone: 'sky',
+    },
+    {
+      id: 'put-011', nik: '00013344556677', npwp: '77.001.223.8-013.000', bpjs: '0001 3344 5566 7',
+      name: 'Putri Anindita', email: 'putri.anindita@nexa.co.id', phone: '+62 811 2233 447',
+      role: 'Legal Counsel', department: 'Legal & Compliance', entity: 'PT Nexa Digital Indonesia',
+      country: 'Indonesia', location: 'Jakarta', type: 'TETAP', status: 'AKTIF',
+      joinDate: new Date('2022-03-21'), manager: 'Fajar Ramadhan', grade: 'G6', salary: 32000000,
+      currency: 'IDR', bank: 'Mandiri', account: '•••• 9903', accountVerified: true, taxStatus: 'TK/0',
+      photoUrl: null, tone: 'mint',
+    },
+    {
+      id: 'ari-012', nik: '00018899001122', npwp: '88.112.334.5-405.000', bpjs: '0001 8899 0011 2',
+      name: 'Arif Setiawan', email: 'arif.setiawan@nexa.co.id', phone: '+62 895 1122 334',
+      role: 'QA Engineer', department: 'Engineering', entity: 'PT Nexa Digital Indonesia',
+      country: 'Indonesia', location: 'Bandung', type: 'MAGANG', status: 'OFFBOARDING',
+      joinDate: new Date('2025-06-09'), lastDay: new Date('2026-11-30'), manager: 'Bagas Nugroho',
+      grade: 'G2', salary: 6500000, currency: 'IDR', bank: 'BNI', account: '•••• 4408',
+      accountVerified: true, taxStatus: 'TK/0', photoUrl: null, tone: 'peach',
+    },
+  ]
+
+  for (const e of employees) {
+    await prisma.employee.upsert({
+      where: { id: e.id },
+      update: {},
+      create: e,
+    })
+    // Riwayat kerja awal
+    await prisma.employmentHistory.create({
+      data: {
+        employeeId: e.id,
+        effective: e.joinDate,
+        inputDate: e.joinDate,
+        title: e.role,
+        detail: 'Perekrutan awal',
+        reason: 'HIRE',
+        actor: 'Sistem Seeding',
+        grade: e.grade,
+        salary: e.salary,
+        entity: e.entity,
+        department: e.department,
+        position: e.role,
+        type: e.type,
+        status: e.status,
+      },
+    })
+  }
+
+  // Siklus payroll
+  await prisma.payrollCycle.create({
+    data: {
+      id: 'PR-2026-11',
+      period: 'November 2026',
+      entityId,
+      country: 'Indonesia',
+      employees: 842,
+      gross: 14820000000,
+      net: 12140000000,
+      tax: 1360000000,
+      social: 420000000,
+      currency: 'IDR',
+      status: 'REVIEW_VARIANSI',
+      progress: 76,
+      anomalies: 3,
+      variance: 1.8,
+      cutoff: new Date('2026-11-25'),
+      payDate: new Date('2026-11-28'),
+    },
+  })
+
+  // Slip gaji contoh
+  await prisma.payslip.create({
+    data: {
+      id: 'PS-2026-11-001',
+      cycleId: 'PR-2026-11',
+      employeeId: 'nad-001',
+      period: 'November 2026',
+      gross: 42000000,
+      deduction: 6180000,
+      net: 35820000,
+      status: 'DRAFT',
+    },
+  })
+
+  // Audit log awal
+  await prisma.auditLog.create({
+    data: {
+      id: 'aud-001',
+      at: new Date('2026-11-22T09:14:00Z'),
+      actorId: 'usr-002',
+      action: 'UBAH_KOMPONEN_GAJI',
+      target: 'Bagas Nugroho',
+      field: 'Bonus & komisi',
+      before: 'Rp 0',
+      after: 'Rp 12.700.000',
+      reason: 'Bonus proyek Q4',
+      ipAddress: '10.0.0.1',
+      userAgent: 'Mozilla/5.0 (compatible; NEXA HR)',
+    },
+  })
+
+  // Integrasi
+  await prisma.integration.createMany({
+    data: [
+      { id: 'int-001', name: 'SSO / SCIM', vendor: 'Okta', status: 'TERHUBUNG', detail: 'SAML + provisioning otomatis' },
+      { id: 'int-002', name: 'ERP / GL', vendor: 'SAP S/4HANA', status: 'TERHUBUNG', detail: 'Jurnal payroll per cost center' },
+      { id: 'int-003', name: 'Bank payroll', vendor: 'BCA · Mandiri', status: 'TERHUBUNG', detail: 'File pembayaran + rekonsiliasi' },
+      { id: 'int-004', name: 'Provider payroll lokal', vendor: 'Singapore Payroll Co', status: 'UJI_COBA', detail: 'Hybrid payroll Fase 2' },
+      { id: 'int-005', name: 'E-signature', vendor: 'Privy', status: 'TERHUBUNG', detail: 'Kontrak & paklaring' },
+      { id: 'int-006', name: 'Data warehouse', vendor: 'BigQuery', status: 'TERHUBUNG', detail: 'Feed analitik harian' },
+    ],
+  })
+
+  // Leave types
+  await prisma.leaveType.createMany({
+    data: [
+      { id: 'lt-001', name: 'Cuti tahunan', entityId, annualDays: 16, rules: JSON.stringify({ accrual: '16/tahun', carryOver: 5, expiry: '31 Maret tahun berikutnya' }) },
+      { id: 'lt-002', name: 'Cuti sakit', entityId, annualDays: 12, rules: JSON.stringify({ requiresDoctorNote: true, minDays: 2 }) },
+      { id: 'lt-003', name: 'Cuti melahirkan', entityId, annualDays: 90, rules: JSON.stringify({}) },
+      { id: 'lt-004', name: 'Cuti keagamaan', entityId, annualDays: 4, rules: JSON.stringify({}) },
+      { id: 'lt-005', name: 'Cuti tanpa gaji', entityId, annualDays: 0, rules: JSON.stringify({ unpaid: true }) },
+    ],
+  })
+
+  // Leave requests contoh
+  await prisma.leaveRequest.createMany({
+    data: [
+      { id: 'LV-1042', employeeId: 'riz-004', typeId: 'lt-001', startDate: new Date('2026-11-24'), endDate: new Date('2026-11-26'), days: 3, status: 'MENUNJU', approverId: 'usr-008', note: null },
+      { id: 'LV-1041', employeeId: 'yog-010', typeId: 'lt-004', startDate: new Date('2026-12-02'), endDate: new Date('2026-12-06'), days: 5, status: 'MENUNJU', approverId: 'usr-003', note: null },
+      { id: 'LV-1040', employeeId: 'mel-009', typeId: 'lt-005', startDate: new Date('2026-12-01'), endDate: new Date('2026-12-03'), days: 3, status: 'MENUNJU', approverId: 'usr-008', note: 'Saldo tahunan habis' },
+    ],
+  })
+
+  // Leave balances
+  await prisma.leaveBalance.createMany({
+    data: [
+      { id: 'lb-001', employeeId: 'nad-001', typeId: 'lt-001', used: 4, total: 16 },
+      { id: 'lb-002', employeeId: 'nad-001', typeId: 'lt-002', used: 1, total: 12 },
+      { id: 'lb-003', employeeId: 'nad-001', typeId: 'lt-003', used: 0, total: 90 },
+      { id: 'lb-004', employeeId: 'nad-001', typeId: 'lt-004', used: 2, total: 4 },
+    ],
+  })
+
+  // Salary bands
+  await prisma.salaryBand.createMany({
+    data: [
+      { id: 'sb-001', grade: 'G7', title: 'Head / Director', min: 38000000, mid: 45000000, max: 56000000, headcount: 6, compa: 1.02 },
+      { id: 'sb-002', grade: 'G6', title: 'Senior Manager', min: 28000000, mid: 34000000, max: 42000000, headcount: 18, compa: 0.98 },
+      { id: 'sb-003', grade: 'G5', title: 'Manager', min: 20000000, mid: 25000000, max: 31000000, headcount: 42, compa: 0.96 },
+      { id: 'sb-004', grade: 'G4', title: 'Senior Specialist', min: 13000000, mid: 17000000, max: 21000000, headcount: 186, compa: 0.94 },
+      { id: 'sb-005', grade: 'G3', title: 'Specialist', min: 9000000, mid: 11500000, max: 14000000, headcount: 324, compa: 0.91 },
+      { id: 'sb-006', grade: 'G2', title: 'Associate', min: 6000000, mid: 7500000, max: 9000000, headcount: 208, compa: 0.89 },
+    ],
+  })
+
+  // Benefits
+  await prisma.benefit.createMany({
+    data: [
+      { id: 'bn-001', name: 'Asuransi kesehatan', provider: 'Prudential', coverage: 'Karyawan + 2 dependen', enrolled: 1180, eligible: 1284 },
+      { id: 'bn-002', name: 'BPJS Kesehatan & TK', provider: 'BPJS', coverage: 'Wajib statutory', enrolled: 1284, eligible: 1284 },
+      { id: 'bn-003', name: 'Dana pensiun', provider: 'Manulife', coverage: 'Kontribusi 5% + 5%', enrolled: 742, eligible: 1102 },
+      { id: 'bn-004', name: 'Tunjangan kesehatan fleksibel', provider: 'Nexa Flex', coverage: 'Rp 6 jt / tahun', enrolled: 486, eligible: 1284 },
+    ],
+  })
+
+  // Workflow config
+  await prisma.workflowConfig.create({
+    data: {
+      id: 'wf-001',
+      name: 'Approval cuti standar',
+      entityId,
+      version: 1,
+      conditions: JSON.stringify({ slaDays: 2, autoEscalate: true }),
+      sla: '2 hari kerja',
+      escalation: 'HRBP',
+      environment: 'production',
+      approved: true,
+    },
+  })
+
+  console.log('✅ Seeding selesai.')
+}
+
+main()
+  .catch((e) => {
+    console.error('❌ Seeding gagal:', e)
+    process.exit(1)
+  })
+  .finally(async () => {
+    await prisma.$disconnect()
+  })
