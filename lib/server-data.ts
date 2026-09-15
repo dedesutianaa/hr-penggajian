@@ -193,3 +193,197 @@ export async function getCostCenters(entityId?: string) {
   return result.rows
 }
 
+export async function getAttendanceRecords(employeeId?: string, date?: string) {
+  let where = 'WHERE 1=1'
+  let params: unknown[] = []
+  let paramIndex = 1
+  if (employeeId) {
+    where += ` AND "employeeId" = $${paramIndex}`
+    params.push(employeeId)
+    paramIndex++
+  }
+  if (date) {
+    where += ` AND "date" = $${paramIndex}`
+    params.push(date)
+    paramIndex++
+  }
+  const result = await query(`SELECT * FROM "AttendanceRecord" ${where} ORDER BY "date" DESC`, params)
+  return result.rows
+}
+
+export async function getOvertimeRequests(employeeId?: string) {
+  let where = 'WHERE 1=1'
+  let params: unknown[] = []
+  let paramIndex = 1
+  if (employeeId) {
+    where += ` AND "employeeId" = $${paramIndex}`
+    params.push(employeeId)
+    paramIndex++
+  }
+  const result = await query(`SELECT * FROM "OvertimeRequest" ${where} ORDER BY "date" DESC`, params)
+  return result.rows
+}
+
+export async function getShifts(entityId?: string) {
+  let where = 'WHERE 1=1'
+  let params: unknown[] = []
+  if (entityId) {
+    where += ` AND "entityId" = $1`
+    params.push(entityId)
+  }
+  const result = await query(`SELECT * FROM "Shift" ${where} ORDER BY "name"`, params)
+  return result.rows
+}
+
+export async function getPayslipResults(cycleId: string) {
+  const result = await query(
+    `SELECT * FROM "PayrollResult" WHERE "cycleId" = $1 ORDER BY "employeeId"`,
+    [cycleId]
+  )
+  return result.rows
+}
+
+export async function getPayslipById(id: string) {
+  const result = await query(
+    `SELECT "p".*, "e"."name" as "employeeName", "e"."nik" as "employeeNik", "e"."bank" as "employeeBank", "e"."account" as "employeeAccount", "c"."period" as "cyclePeriod" FROM "Payslip" "p" JOIN "Employee" "e" ON "p"."employeeId" = "e"."id" LEFT JOIN "PayrollCycle" "c" ON "p"."cycleId" = "c"."id" WHERE "p"."id" = $1`,
+    [id]
+  )
+  return result.rows[0] ?? null
+}
+
+export async function getPayslips({ page = 1, limit = 20 }: { page?: number; limit?: number }) {
+  const offset = (page - 1) * limit
+  const countResult = await query('SELECT COUNT(*) FROM "Payslip"')
+  const total = parseInt(countResult.rows[0].count)
+
+  const result = await query(
+    `SELECT "p".*, "e"."name" as "employeeName", "e"."nik" as "employeeNik", "c"."period" as "cyclePeriod" FROM "Payslip" "p" JOIN "Employee" "e" ON "p"."employeeId" = "e"."id" LEFT JOIN "PayrollCycle" "c" ON "p"."cycleId" = "c"."id" ORDER BY "p"."createdAt" DESC LIMIT $1 OFFSET $2`,
+    [limit, offset]
+  )
+
+  return { data: result.rows, total, page, limit }
+}
+
+export async function getExpenses({
+  employeeId,
+  status,
+  page = 1,
+  limit = 20,
+}: { employeeId?: string; status?: string; page?: number; limit?: number }) {
+  let where = 'WHERE 1=1'
+  let params: unknown[] = []
+  let paramIndex = 1
+  if (employeeId) {
+    where += ` AND "employeeId" = $${paramIndex}`
+    params.push(employeeId)
+    paramIndex++
+  }
+  if (status) {
+    where += ` AND "status" = $${paramIndex}`
+    params.push(status)
+    paramIndex++
+  }
+  const countResult = await query(`SELECT COUNT(*) FROM "Expense" ${where}`, params)
+  const total = parseInt(countResult.rows[0].count)
+
+  const result = await query(
+    `SELECT "e".*, "emp"."name" as "employee", "emp"."nik" as "employeeNik" FROM "Expense" "e" JOIN "Employee" "emp" ON "e"."employeeId" = "emp"."id" ${where} ORDER BY "e"."createdAt" DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
+    [...params, limit, (page - 1) * limit]
+  )
+
+  return { data: result.rows, total, page, limit }
+}
+
+export async function getTickets({
+  status,
+  priority,
+  page = 1,
+  limit = 20,
+}: { status?: string; priority?: string; page?: number; limit?: number }) {
+  let where = 'WHERE 1=1'
+  let params: unknown[] = []
+  let paramIndex = 1
+  if (status) {
+    where += ` AND "status" = $${paramIndex}`
+    params.push(status)
+    paramIndex++
+  }
+  if (priority) {
+    where += ` AND "priority" = $${paramIndex}`
+    params.push(priority)
+    paramIndex++
+  }
+  const countResult = await query(`SELECT COUNT(*) FROM "Ticket" ${where}`, params)
+  const total = parseInt(countResult.rows[0].count)
+
+  const result = await query(
+    `SELECT * FROM "Ticket" ${where} ORDER BY "createdAt" DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
+    [...params, limit, (page - 1) * limit]
+  )
+
+  return { data: result.rows, total, page, limit }
+}
+
+export async function getOnboardingTasks(employeeId?: string) {
+  let where = 'WHERE 1=1'
+  let params: unknown[] = []
+  if (employeeId) {
+    where += ` AND "employeeId" = $1`
+    params.push(employeeId)
+  }
+  const result = await query(`SELECT * FROM "OnboardingTask" ${where} ORDER BY "createdAt"`, params)
+  return result.rows
+}
+
+export async function getOffboardingTasks(employeeId?: string) {
+  let where = 'WHERE 1=1'
+  let params: unknown[] = []
+  if (employeeId) {
+    where += ` AND "employeeId" = $1`
+    params.push(employeeId)
+  }
+  const result = await query(`SELECT * FROM "OffboardingTask" ${where} ORDER BY "createdAt"`, params)
+  return result.rows
+}
+
+export async function getRequisitions() {
+  const result = await query('SELECT * FROM "Requisition" ORDER BY "createdAt" DESC')
+  return result.rows
+}
+
+export async function getCandidates(requisitionId?: string) {
+  let where = 'WHERE 1=1'
+  let params: unknown[] = []
+  if (requisitionId) {
+    where += ` AND "stageId" = $1`
+    params.push(requisitionId)
+  }
+  const result = await query(`SELECT * FROM "Candidate" ${where} ORDER BY "createdAt" DESC`, params)
+  return result.rows
+}
+
+export async function getInterviews() {
+  const result = await query('SELECT * FROM "Interview" ORDER BY "date" ASC')
+  return result.rows
+}
+
+export async function getPerformanceReviews(employeeId?: string) {
+  let where = 'WHERE 1=1'
+  let params: unknown[] = []
+  if (employeeId) {
+    where += ` AND "employeeId" = $1`
+    params.push(employeeId)
+  }
+  const result = await query(`SELECT * FROM "PerformanceReview" ${where} ORDER BY "createdAt" DESC`, params)
+  return result.rows
+}
+
+export async function getOKRs() {
+  const result = await query('SELECT * FROM "OKR" ORDER BY "createdAt" DESC')
+  return result.rows
+}
+
+export async function getPayrollAnomalies() {
+  const result = await query('SELECT * FROM "PayrollAnomaly" ORDER BY "createdAt" DESC LIMIT 10')
+  return result.rows
+}
