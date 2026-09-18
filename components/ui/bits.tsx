@@ -232,3 +232,229 @@ export function DotBars({
   )
 }
 
+export function Sparkline({
+  values,
+  className,
+  stroke = '#0f120e',
+  fill = 'rgba(217,244,91,0.55)',
+}: {
+  values: number[]
+  className?: string
+  stroke?: string
+  fill?: string
+}) {
+  const width = 100
+  const height = 34
+  const min = Math.min(...values)
+  const max = Math.max(...values)
+  const points = values.map((value, index) => {
+    const x = (index / (values.length - 1)) * width
+    const y = height - 3 - ((value - min) / (max - min || 1)) * (height - 8)
+    return [x, y] as const
+  })
+  const line = points.map(([x, y], index) => `${index === 0 ? 'M' : 'L'}${x.toFixed(2)},${y.toFixed(2)}`).join(' ')
+  return (
+    <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className={className} aria-hidden>
+      <path d={`${line} L${width},${height} L0,${height} Z`} fill={fill} />
+      <path
+        d={line}
+        fill="none"
+        stroke={stroke}
+        strokeWidth={1.6}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        vectorEffect="non-scaling-stroke"
+      />
+    </svg>
+  )
+}
+
+export function Donut({
+  value,
+  size = 72,
+  strokeWidth = 7,
+  tone = 'lime',
+  label,
+}: {
+  value: number
+  size?: number
+  strokeWidth?: number
+  tone?: 'lime' | 'ink' | 'mint' | 'sky'
+  label?: ReactNode
+}) {
+  const radius = (size - strokeWidth) / 2
+  const circumference = 2 * Math.PI * radius
+  const colors = {
+    lime: '#c2e63a',
+    ink: '#0f120e',
+    mint: '#7fbf9a',
+    sky: '#8bb6dd',
+  }
+  return (
+    <div className="relative inline-grid place-items-center" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90" aria-hidden>
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="rgba(15,18,14,0.08)" strokeWidth={strokeWidth} />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke={colors[tone]}
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          strokeDasharray={`${(value / 100) * circumference} ${circumference}`}
+        />
+      </svg>
+      <span className="absolute text-center text-xs font-semibold text-ink">{label ?? `${value}%`}</span>
+    </div>
+  )
+}
+
+export function StatCard({
+  label,
+  value,
+  delta,
+  hint,
+  tone = 'glass',
+  icon,
+  className,
+}: {
+  label: string
+  value: ReactNode
+  delta?: string
+  hint?: string
+  tone?: 'glass' | 'lime' | 'dark'
+  icon?: ReactNode
+  className?: string
+}) {
+  const tones = {
+    glass: 'glass text-ink',
+    lime: 'bg-lime text-ink border border-lime-deep/30',
+    dark: 'glass-dark text-white',
+  }
+  return (
+    <div className={cn('rounded-[22px] p-4', tones[tone], className)}>
+      <div className="flex items-center justify-between gap-2">
+        <span className={cn('text-[11px] font-medium tracking-wide', tone === 'dark' ? 'text-white/60' : 'text-muted')}>
+          {label}
+        </span>
+        {icon ? <span className={cn(tone === 'dark' ? 'text-white/60' : 'text-ink/40')}>{icon}</span> : null}
+      </div>
+      <div className="mt-2 flex items-end gap-2">
+        <span className="text-[26px] leading-none font-semibold tracking-[-0.03em]">{value}</span>
+        {delta ? <Delta value={delta} className={tone === 'dark' ? 'bg-white/15 text-white' : undefined} /> : null}
+      </div>
+      {hint ? (
+        <p className={cn('mt-1.5 text-[11px]', tone === 'dark' ? 'text-white/50' : 'text-muted')}>{hint}</p>
+      ) : null}
+    </div>
+  )
+}
+
+export function Table({
+  head,
+  children,
+  className,
+  minWidth = 'min-w-[720px]',
+}: {
+  head: ReactNode[]
+  children: ReactNode
+  className?: string
+  minWidth?: string
+}) {
+  return (
+    <div className={cn('-mx-1 min-w-0 overflow-x-auto px-1', className)}>
+      <table className={cn('w-full border-separate border-spacing-y-1 text-left text-sm', minWidth)}>
+        <thead>
+          <tr>
+            {head.map((cell, index) => (
+              <th
+                key={index}
+                scope="col"
+                className="px-3 pb-1.5 text-[10px] font-medium tracking-[0.1em] text-muted uppercase"
+              >
+                {cell}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>{children}</tbody>
+      </table>
+    </div>
+  )
+}
+
+export function Row({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <tr className={cn('group transition-colors [&>td]:hover:bg-white/80', className)}>{children}</tr>
+  )
+}
+
+export function Cell({
+  children,
+  className,
+  colSpan,
+}: {
+  children: ReactNode
+  className?: string
+  colSpan?: number
+}) {
+  return (
+    <td
+      colSpan={colSpan}
+      className={cn(
+        'border-y border-white/70 bg-white/45 px-3 py-2.5 align-middle transition-colors first:rounded-l-2xl first:border-l last:rounded-r-2xl last:border-r',
+        className,
+      )}
+    >
+      {children}
+    </td>
+  )
+}
+
+export function Field({
+  label,
+  value,
+  className,
+}: {
+  label: string
+  value: ReactNode
+  className?: string
+}) {
+  return (
+    <div className={cn('min-w-0', className)}>
+      <dt className="text-[10px] font-medium tracking-[0.1em] text-muted uppercase">{label}</dt>
+      <dd className="mt-1 truncate text-sm font-medium text-ink">{value}</dd>
+    </div>
+  )
+}
+
+export function CheckCircle({ done }: { done: boolean }) {
+  return (
+    <span
+      className={cn(
+        'grid size-5 shrink-0 place-items-center rounded-full border',
+        done ? 'border-ink bg-ink text-lime' : 'border-ink/15 bg-white/60 text-transparent',
+      )}
+      aria-hidden
+    >
+      <Check className="size-3" strokeWidth={3} />
+    </span>
+  )
+}
+
+export function ArrowLink({ href, label }: { href: string; label: string }) {
+  return (
+    <a
+      href={href}
+      className="inline-flex items-center gap-1 text-[11px] font-medium text-ink-soft transition-colors hover:text-ink"
+    >
+      {label}
+      <ArrowUpRight className="size-3.5" />
+    </a>
+  )
+}
+
+export function ToneDot({ tone }: { tone: Tone }) {
+  return <span className={cn('size-2 rounded-full', toneDot[tone])} aria-hidden />
+}
