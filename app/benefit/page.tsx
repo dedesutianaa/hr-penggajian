@@ -77,3 +77,82 @@ export default async function BenefitPage() {
               head={['ID', 'Karyawan', 'Kategori', 'Tanggal', 'Nominal', 'Status', '']}
               minWidth="min-w-[720px]"
             >
+              {expenses.map((expense) => (
+                <Row key={expense.id}>
+                  <Cell className="text-[11px] font-medium text-ink">{expense.id}</Cell>
+                  <Cell className="text-[12px] text-ink-soft">{expense.employee}</Cell>
+                  <Cell>
+                    <p className="text-[11.5px] text-ink-soft">{expense.category}</p>
+                    <p className="text-[9.5px] text-muted">{expense.ocr ? 'Struk terbaca OCR' : 'Input manual'}</p>
+                  </Cell>
+                  <Cell className="text-[11px] whitespace-nowrap text-ink-soft">{formatDate(expense.date)}</Cell>
+                  <Cell className="text-[11.5px] font-medium whitespace-nowrap text-ink">{formatIDR(expense.amount)}</Cell>
+                  <Cell>
+                    <StatusPill status={expense.status} />
+                  </Cell>
+                  <Cell className="w-20">
+                    {expense.status === 'Menunggu' ? (
+                      <button
+                        type="button"
+                        className="focus-ring rounded-full bg-ink px-2.5 py-1 text-[10px] font-medium text-white"
+                      >
+                        Review
+                      </button>
+                    ) : (
+                      <span className="text-[10px] text-muted">—</span>
+                    )}
+                  </Cell>
+                </Row>
+              ))}
+            </Table>
+          </div>
+        </Panel>
+
+        <div className="space-y-3 lg:col-span-4">
+          <Panel>
+            <PanelHead title="Kebijakan per grade" hint="Batas klaim bulanan" />
+            <ul className="mt-3 space-y-2">
+              {[
+                { grade: 'G7', limit: 'Rp 5.000.000', detail: 'Perjalanan & representasi' },
+                { grade: 'G5–G6', limit: 'Rp 3.000.000', detail: 'Perjalanan dinas' },
+                { grade: 'G3–G4', limit: 'Rp 1.500.000', detail: 'Transport & peralatan' },
+                { grade: 'G2', limit: 'Rp 750.000', detail: 'Transport shift' },
+              ].map((policy) => (
+                <li
+                  key={policy.grade}
+                  className="flex items-center justify-between gap-2 rounded-2xl border border-white/70 bg-white/50 px-3 py-2"
+                >
+                  <div>
+                    <p className="text-[11.5px] font-semibold text-ink">{policy.grade}</p>
+                    <p className="text-[10px] text-muted">{policy.detail}</p>
+                  </div>
+                  <span className="text-[11px] font-medium text-ink">{policy.limit}</span>
+                </li>
+              ))}
+            </ul>
+          </Panel>
+
+          <Panel>
+            <PanelHead title="Open enrolment" hint="Jendela 1–15 Desember 2026" />
+            <div className="mt-3 rounded-[18px] bg-lime/50 p-3">
+              <p className="text-[11.5px] font-semibold text-ink">Perubahan dependen & benefit fleksibel</p>
+              <p className="mt-1 text-[10.5px] leading-relaxed text-ink-soft">
+                Karyawan dapat mengubah pilihan benefit sekali per tahun. Perubahan kontribusi otomatis masuk payroll Januari.
+              </p>
+            </div>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              <SubPanel>
+                <p className="text-[10px] tracking-[0.08em] text-muted uppercase">Sudah enrolment</p>
+                <p className="mt-1 text-lg font-semibold">742</p>
+              </SubPanel>
+              <SubPanel>
+                <p className="text-[10px] tracking-[0.08em] text-muted uppercase">Belum</p>
+                <p className="mt-1 text-lg font-semibold">542</p>
+              </SubPanel>
+            </div>
+          </Panel>
+        </div>
+      </div>
+    </div>
+  )
+}
