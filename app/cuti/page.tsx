@@ -134,3 +134,139 @@ export default async function LeavePage() {
                             aria-label={`Tolak cuti ${request.employee}`}
                             className="focus-ring grid size-7 place-items-center rounded-full border border-white/80 bg-white/70 text-ink-soft"
                           >
+                            <X className="size-3.5" />
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-[10px] text-muted">—</span>
+                      )}
+                    </Cell>
+                  </Row>
+                )
+              })}
+            </Table>
+          </div>
+          <div className="mt-3 rounded-2xl bg-lime/40 px-3 py-2 text-[10.5px] leading-relaxed text-ink-soft">
+            Saldo tidak cukup? Sistem menolak atau menawarkan sisa sebagai cuti tanpa gaji sesuai kebijakan entitas, lengkap
+            dengan estimasi dampak ke gaji.
+          </div>
+        </Panel>
+
+        <div className="space-y-3 lg:col-span-4">
+          <Panel>
+            <PanelHead title="Saldo cuti saya" hint="Periode 2026 · efektif 1 Jan" />
+            <div className="mt-4 flex items-center gap-4">
+              <Donut value={75} size={92} strokeWidth={9} label={<span className="text-[15px]">12<span className="text-[9px] text-muted">/16</span></span>} />
+              <div className="space-y-1.5 text-[11px]">
+                <p className="flex items-center gap-1.5 text-ink-soft">
+                  <span className="size-2 rounded-full bg-lime-deep" /> Terpakai 4 hari
+                </p>
+                <p className="flex items-center gap-1.5 text-ink-soft">
+                  <span className="size-2 rounded-full bg-ink/10" /> Sisa 12 hari
+                </p>
+                <p className="text-[10px] text-muted">Carry-over maks. 5 hari</p>
+              </div>
+            </div>
+            <div className="mt-4 space-y-2">
+              {leaveBalances.map((balance) => (
+                <div key={balance.label}>
+                  <div className="flex items-center justify-between text-[10.5px]">
+                    <span className="text-ink-soft">{balance.label}</span>
+                    <span className="text-muted">
+                      {balance.total - balance.used}/{balance.total}
+                    </span>
+                  </div>
+                  <Progress
+                    value={((balance.total - balance.used) / balance.total) * 100}
+                    tone={balance.tone === 'lime' ? 'lime' : balance.tone === 'sky' ? 'sky' : 'mint'}
+                    className="mt-1"
+                  />
+                </div>
+              ))}
+            </div>
+          </Panel>
+
+          <Panel>
+            <PanelHead title="Kebijakan cuti" hint="PT Nexa Digital Indonesia" />
+            <ul className="mt-3 space-y-2 text-[10.5px] leading-relaxed text-ink-soft">
+              <li className="rounded-2xl border border-white/70 bg-white/50 p-2.5">
+                Akrual 16 hari/tahun, proration untuk karyawan baru, kedaluwarsa 31 Maret tahun berikutnya.
+              </li>
+              <li className="rounded-2xl border border-white/70 bg-white/50 p-2.5">
+                Cuti sakit &gt; 2 hari wajib lampiran surat dokter dengan akses terbatas.
+              </li>
+              <li className="rounded-2xl border border-white/70 bg-white/50 p-2.5">
+                Pencairan sisa cuti hanya pada offboarding, dihitung ke final pay.
+              </li>
+            </ul>
+          </Panel>
+        </div>
+      </div>
+
+      <div className="grid items-start gap-3 lg:grid-cols-12">
+        <Panel className="lg:col-span-8">
+          <PanelHead
+            title="Kalender tim"
+            hint="November 2026 · deteksi bentrok otomatis"
+            action={
+              <div className="flex items-center gap-2 text-[10px] text-muted">
+                <span className="flex items-center gap-1">
+                  <span className="size-2 rounded-full bg-sky" /> Cuti
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="size-2 rounded-full bg-lilac" /> Menunggu
+                </span>
+              </div>
+            }
+          />
+          <div className="mt-4 grid grid-cols-7 gap-1.5">
+            {weekdays.map((day) => (
+              <div key={day} className="pb-1 text-center text-[10px] font-medium tracking-[0.08em] text-muted uppercase">
+                {day}
+              </div>
+            ))}
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div
+                key={`offset-${index}`}
+                aria-hidden
+                className="min-h-[58px] rounded-xl border border-white/40 bg-white/20"
+              />
+            ))}
+            {Array.from({ length: 30 }).map((_, index) => {
+              const day = index + 1
+              const isToday = day === 22
+              return (
+                <div
+                  key={day}
+                  className={`min-h-[58px] rounded-xl border p-1.5 ${
+                    isToday ? 'border-lime-deep/50 bg-lime/40' : 'border-white/70 bg-white/45'
+                  }`}
+                >
+                  <p className={`text-[10.5px] font-medium ${isToday ? 'text-ink' : 'text-ink-soft'}`}>{day}</p>
+                </div>
+              )
+            })}
+          </div>
+        </Panel>
+
+        <Panel className="lg:col-span-4">
+          <PanelHead title="Liabilitas cuti" hint="Untuk Finance · per entitas" />
+          <div className="mt-3 space-y-2">
+            {departments.slice(0, 3).map((dept) => (
+              <SubPanel key={dept.id}>
+                <div className="flex items-center justify-between">
+                  <p className="text-[11px] font-medium text-ink">{dept.name}</p>
+                  <p className="text-[11px] font-semibold text-ink">Rp 1,02 M</p>
+                </div>
+                <p className="mt-0.5 text-[10px] text-muted">1.842 hari akumulasi</p>
+              </SubPanel>
+            ))}
+          </div>
+          <p className="mt-3 text-[10px] leading-relaxed text-muted">
+            Dihitung dari saldo per 22 Nov 2026 dengan tarif gaji harian masing-masing karyawan.
+          </p>
+        </Panel>
+      </div>
+    </div>
+  )
+}
