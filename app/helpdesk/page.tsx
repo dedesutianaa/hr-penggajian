@@ -62,3 +62,67 @@ export default async function HelpdeskPage() {
                   <Cell className="text-[11px] font-medium text-ink">{ticket.id}</Cell>
                   <Cell className="max-w-[240px] text-[12px] text-ink-soft">{ticket.subject}</Cell>
                   <Cell className="text-[11px] text-ink-soft">{ticket.category}</Cell>
+                  <Cell>
+                    <StatusPill status={ticket.priority} />
+                  </Cell>
+                  <Cell className="text-[11px] text-ink-soft">{ticket.assignee}</Cell>
+                  <Cell className="text-[11px] whitespace-nowrap text-ink-soft">{ticket.sla}</Cell>
+                  <Cell>
+                    <StatusPill status={ticket.status} />
+                  </Cell>
+                </Row>
+              ))}
+            </Table>
+          </div>
+        </Panel>
+
+        <div className="space-y-3 lg:col-span-4">
+          <Panel>
+            <PanelHead title="SLA per kategori" hint="Bulan berjalan" />
+            <div className="mt-3 space-y-2.5">
+              {[
+                { label: 'Payroll', value: 96 },
+                { label: 'Data pribadi', value: 91 },
+                { label: 'Cuti', value: 94 },
+                { label: 'Dokumen', value: 88 },
+                { label: 'IT & akses', value: 82 },
+              ].map((item) => (
+                <div key={item.label}>
+                  <div className="flex items-center justify-between text-[10.5px]">
+                    <span className="text-ink-soft">{item.label}</span>
+                    <span className="font-medium text-ink">{item.value}%</span>
+                  </div>
+                  <Progress value={item.value} tone={item.value >= 90 ? 'lime' : 'mint'} className="mt-1" />
+                </div>
+              ))}
+            </div>
+          </Panel>
+
+          <Panel>
+            <PanelHead title="Knowledge base" hint="Paling banyak dibuka" />
+            <ul className="mt-3 space-y-2">
+              {knowledge.map((article) => (
+                <li
+                  key={article.title}
+                  className="rounded-2xl border border-white/70 bg-white/50 px-3 py-2"
+                >
+                  <p className="text-[11.5px] font-medium text-ink">{article.title}</p>
+                  <p className="mt-0.5 flex items-center gap-2 text-[10px] text-muted">
+                    <BookOpen className="size-3" /> {article.category} · {article.views} dilihat
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </Panel>
+
+          <SubPanel>
+            <p className="text-[10px] tracking-[0.08em] text-muted uppercase">Catatan kepatuhan</p>
+            <p className="mt-1 text-[10.5px] leading-relaxed text-ink-soft">
+              Asisten AI untuk pertanyaan kebijakan ditunda ke P2 dan hanya boleh menjawab dengan kutipan dokumen resmi.
+            </p>
+          </SubPanel>
+        </div>
+      </div>
+    </div>
+  )
+}
