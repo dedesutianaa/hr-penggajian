@@ -96,3 +96,101 @@ export default async function AttendancePage() {
           <div className="mt-3">
             <Table
               head={['Karyawan', 'Clock in', 'Clock out', 'Lokasi', 'Jam kerja', 'Status']}
+              minWidth="min-w-[720px]"
+            >
+              {employees.data.slice(0, 10).map((emp) => {
+                const rec = attendance.find((a) => a.employeeId === emp.id)
+                return (
+                  <Row key={emp.id}>
+                    <Cell>
+                      <div className="flex items-center gap-2.5">
+                        <Avatar name={emp.name} tone={(emp.tone as any) ?? 'mint'} size="sm" />
+                        <div className="min-w-0">
+                          <p className="truncate text-[12.5px] font-medium text-ink">{emp.name}</p>
+                          <p className="truncate text-[10px] text-muted">{emp.role}</p>
+                        </div>
+                      </div>
+                    </Cell>
+                    <Cell className="font-mono text-[11.5px] text-ink-soft">{rec?.clockIn ?? '—'}</Cell>
+                    <Cell className="font-mono text-[11.5px] text-ink-soft">{rec?.clockOut ?? '—'}</Cell>
+                    <Cell>
+                      <span className="inline-flex items-center gap-1 text-[11px] text-ink-soft">
+                        <MapPin className="size-3 text-muted" /> {rec?.location ?? '—'}
+                      </span>
+                    </Cell>
+                    <Cell className="text-[11.5px] text-ink-soft">{rec?.hours ?? '—'}</Cell>
+                    <Cell>
+                      <StatusPill status={rec?.status ?? 'Absen'} />
+                    </Cell>
+                  </Row>
+                )
+              })}
+            </Table>
+          </div>
+          <div className="mt-3 flex items-start gap-2 rounded-2xl bg-white/50 px-3 py-2 text-[10.5px] leading-relaxed text-muted">
+            <MapPin className="mt-0.5 size-3.5 shrink-0" />
+            Geofence opsional per lokasi. Data lokasi adalah data pribadi — hanya aktif dengan dasar hukum dan pemberitahuan
+            yang jelas.
+          </div>
+        </Panel>
+
+        <div className="space-y-3 lg:col-span-4">
+          <Panel>
+            <PanelHead title="Shift & roster" hint="Hari ini · data aktif dari database" />
+            <ul className="mt-3 space-y-2">
+              {shifts.slice(0, 4).map((shift) => (
+                <li key={shift.id} className="rounded-[18px] border border-white/70 bg-white/50 p-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-[12px] font-semibold text-ink">{shift.name}</p>
+                      <p className="text-[10.5px] text-muted">{shift.startTime} – {shift.endTime}</p>
+                    </div>
+                    <Pill variant="outline" className="px-2 py-1 text-[10px]">
+                      {shift.headcount} orang
+                    </Pill>
+                  </div>
+                  <Progress
+                    value={(shift.headcount / Math.max(1, total)) * 100}
+                    tone="mint"
+                    className="mt-2"
+                  />
+                </li>
+              ))}
+            </ul>
+          </Panel>
+
+          <Panel>
+            <PanelHead
+              title="Lembur menunggu"
+              hint="Mengalir ke payroll periode berjalan"
+              action={
+                <Pill variant="outline" className="px-2 py-1 text-[10px]">
+                  {overtime.length}
+                </Pill>
+              }
+            />
+            <ul className="mt-3 space-y-2">
+              {overtime.slice(0, 5).map((request) => {
+                const person = employees.data.find((e) => e.id === request.employeeId)
+                return (
+                  <li
+                    key={request.id}
+                    className="flex items-center justify-between gap-2 rounded-2xl border border-white/70 bg-white/50 px-3 py-2"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-[11.5px] font-medium text-ink">{person?.name ?? '—'}</p>
+                      <p className="truncate text-[10px] text-muted">
+                        {formatDate(request.date)} · {request.hours} jam · {request.reason ?? '—'}
+                      </p>
+                    </div>
+                    <StatusPill status={request.status} />
+                  </li>
+                )
+              })}
+            </ul>
+          </Panel>
+        </div>
+      </div>
+    </div>
+  )
+}
