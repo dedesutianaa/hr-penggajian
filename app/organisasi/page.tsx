@@ -97,3 +97,102 @@ export default async function OrganizationPage() {
                         name={entity.name.split(' ').slice(0, 2).join(' ')}
                         role={entity.country}
                         tone={tones[index % tones.length]}
+                      />
+                      <div className="mt-2 w-full space-y-1">
+                        {[
+                          `${entity.name} · ${entity.headcount} karyawan`,
+                          `Payroll: ${entity.country === 'Indonesia' ? 'In-house' : 'Hybrid'}`,
+                        ].map((team) => (
+                          <div
+                            key={team}
+                            className="rounded-xl border border-white/70 bg-white/45 px-2 py-1 text-center text-[10px] text-muted"
+                          >
+                            {team}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 flex flex-wrap items-center gap-2 rounded-2xl bg-lime/40 px-3 py-2 text-[10.5px] text-ink-soft">
+            <Network className="size-3.5" />
+            Simulasi reorganisasi tersedia di P1 — perubahan belum memengaruhi payroll sampai disetujui.
+          </div>
+        </Panel>
+
+        <Panel className="lg:col-span-4">
+          <PanelHead title="Headcount per entitas" hint="Data live dari database" />
+          <div className="mt-4 space-y-3">
+            {entities.map((entity) => {
+              const pct = entities.length > 0 ? Math.round((entity.headcount / Math.max(1, entities.reduce((sum, e) => sum + e.headcount, 0))) * 100) : 0
+              return (
+                <div key={entity.id}>
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="truncate text-ink-soft">{entity.name}</span>
+                    <span className="font-semibold text-ink">{formatNumber(entity.headcount)}</span>
+                  </div>
+                  <Progress value={pct} tone={pct > 50 ? 'ink' : 'mint'} className="mt-1.5" />
+                </div>
+              )
+            })}
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            <SubPanel>
+              <p className="text-[10px] tracking-[0.08em] text-muted uppercase">Rasio span</p>
+              <p className="mt-1 text-lg font-semibold">1 : 7,4</p>
+            </SubPanel>
+            <SubPanel>
+              <p className="text-[10px] tracking-[0.08em] text-muted uppercase">Layer</p>
+              <p className="mt-1 text-lg font-semibold">5</p>
+            </SubPanel>
+          </div>
+        </Panel>
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-12">
+        <Panel className="lg:col-span-8">
+          <PanelHead title="Entitas hukum" hint="Payroll in-house untuk Indonesia, hybrid untuk negara lain" />
+          <div className="mt-3">
+            <Table head={['Entitas', 'Negara', 'Karyawan', 'Mata uang', 'Mode payroll', 'Status']} minWidth="min-w-[720px]">
+              {entities.map((entity) => (
+                <Row key={entity.id}>
+                  <Cell className="text-[12px] font-medium text-ink">{entity.name}</Cell>
+                  <Cell className="text-[11.5px] text-ink-soft">{entity.country}</Cell>
+                  <Cell className="text-[11.5px] text-ink-soft">{formatNumber(entity.headcount)}</Cell>
+                  <Cell className="text-[11.5px] text-ink-soft">{entity.currency}</Cell>
+                  <Cell className="text-[11.5px] text-ink-soft">{entity.payrollMode}</Cell>
+                  <Cell>
+                    <StatusPill status={entity.status} />
+                  </Cell>
+                </Row>
+              ))}
+            </Table>
+          </div>
+        </Panel>
+
+        <Panel className="lg:col-span-4">
+          <PanelHead title="Cost center" hint="Pemakaian anggaran headcount" />
+          <ul className="mt-3 space-y-2">
+            {costCenters.slice(0, 6).map((center) => (
+              <li key={center.id} className="rounded-[18px] border border-white/70 bg-white/50 p-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[12px] font-semibold text-ink">{center.name}</p>
+                    <p className="text-[10px] text-muted">
+                      {center.code} · {center.owner ?? '—'}
+                    </p>
+                  </div>
+                  <span className="text-[11px] font-semibold text-ink">{center.budgetPct}%</span>
+                </div>
+                <Progress value={center.budgetPct} tone={center.budgetPct > 70 ? 'lime' : 'mint'} className="mt-2" />
+              </li>
+            ))}
+          </ul>
+        </Panel>
+      </div>
+    </div>
+  )
+}
