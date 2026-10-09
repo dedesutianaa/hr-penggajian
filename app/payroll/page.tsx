@@ -128,3 +128,133 @@ export default async function PayrollPage() {
             <PanelHead
               title="Kesiapan payroll"
               hint="Cut-off 25 Nov 2026 · 09.00 WIB"
+              action={
+                <Pill variant="lime" className="px-2 py-1 text-[10px]">
+                  2/5
+                </Pill>
+              }
+            />
+            <ul className="mt-3 space-y-1.5">
+              <li className="flex items-center gap-2.5 rounded-2xl border border-white/70 bg-white/50 px-2.5 py-2">
+                <CheckCircle done />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[11.5px] font-medium text-ink">Data pajak & NPWP lengkap</p>
+                  <p className="truncate text-[10px] text-muted">3 karyawan belum lengkap</p>
+                </div>
+              </li>
+              <li className="flex items-center gap-2.5 rounded-2xl border border-white/70 bg-white/50 px-2.5 py-2">
+                <CheckCircle done />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[11.5px] font-medium text-ink">Rekening bank tervalidasi</p>
+                  <p className="truncate text-[10px] text-muted">2 rekening ganda terdeteksi</p>
+                </div>
+              </li>
+              <li className="flex items-center gap-2.5 rounded-2xl border border-white/70 bg-white/50 px-2.5 py-2">
+                <CheckCircle done={true} />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[11.5px] font-medium text-ink">Input variabel (lembur, bonus)</p>
+                  <p className="truncate text-[10px] text-muted">128 baris diimpor 20 Nov</p>
+                </div>
+              </li>
+              <li className="flex items-center gap-2.5 rounded-2xl border border-white/70 bg-white/50 px-2.5 py-2">
+                <CheckCircle done={true} />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[11.5px] font-medium text-ink">Kalkulasi gross-to-net</p>
+                  <p className="truncate text-[10px] text-muted">Selesai 21 Nov · 14.02</p>
+                </div>
+              </li>
+              <li className="flex items-center gap-2.5 rounded-2xl border border-white/70 bg-white/50 px-2.5 py-2">
+                <CheckCircle done={false} />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[11.5px] font-medium text-ink">Approval maker-checker</p>
+                  <p className="truncate text-[10px] text-muted">Menunggu Payroll Lead</p>
+                </div>
+              </li>
+            </ul>
+          </Panel>
+
+          <Panel>
+            <PanelHead title="Pra-payroll checks" hint="Dijalankan otomatis 21 Nov · 14.05" />
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <SubPanel>
+                <p className="text-[10px] tracking-[0.06em] text-muted uppercase">Net negatif</p>
+                <p className="mt-1 text-xl font-semibold text-[#9b3b2e]">1</p>
+              </SubPanel>
+              <SubPanel>
+                <p className="text-[10px] tracking-[0.06em] text-muted uppercase">Kenaikan &gt; 30%</p>
+                <p className="mt-1 text-xl font-semibold text-[#8a5a12]">2</p>
+              </SubPanel>
+              <SubPanel>
+                <p className="text-[10px] tracking-[0.06em] text-muted uppercase">Rekening kosong</p>
+                <p className="mt-1 text-xl font-semibold text-[#3f6b1e]">0</p>
+              </SubPanel>
+              <SubPanel>
+                <p className="text-[10px] tracking-[0.06em] text-muted uppercase">Data pajak hilang</p>
+                <p className="mt-1 text-xl font-semibold text-[#8a5a12]">3</p>
+              </SubPanel>
+            </div>
+            <Link
+              href="/payroll/PR-2026-11"
+              className="mt-3 flex items-center justify-between rounded-full bg-ink px-3.5 py-2 text-[11px] font-medium text-white"
+            >
+              Review anomali
+              <ArrowUpRight className="size-3.5" />
+            </Link>
+          </Panel>
+        </div>
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-12">
+        <Panel className="lg:col-span-7">
+          <PanelHead title="Kalender cut-off" hint="November 2026 · zona waktu Asia/Jakarta" />
+          <ol className="mt-4 grid gap-2 sm:grid-cols-5">
+            {[
+              { date: '18 Nov', label: 'Input variabel', done: true },
+              { date: '21 Nov', label: 'Kalkulasi', done: true },
+              { date: '24 Nov', label: 'Review variansi', done: false },
+              { date: '25 Nov', label: 'Kunci periode', done: false },
+              { date: '28 Nov', label: 'Pembayaran', done: false },
+            ].map((step, index) => (
+              <li
+                key={step.label}
+                className={`rounded-[18px] border p-3 ${
+                  step.done ? 'border-lime-deep/30 bg-lime/50' : 'border-white/70 bg-white/50'
+                }`}
+              >
+                <p className="text-[10px] font-medium tracking-[0.08em] text-muted uppercase">Langkah {index + 1}</p>
+                <p className="mt-1 text-[12px] font-semibold text-ink">{step.date}</p>
+                <p className="text-[10.5px] text-muted">{step.label}</p>
+              </li>
+            ))}
+          </ol>
+        </Panel>
+
+        <Panel className="lg:col-span-5">
+          <PanelHead title="Rekonsiliasi payroll → GL" hint="Oktober 2026 · sudah ditutup" />
+          <div className="mt-3 space-y-2">
+            {[
+              { label: 'Beban gaji & tunjangan', value: 'Rp 14,61 M', status: 'Cocok' },
+              { label: 'Utang PPh 21', value: 'Rp 1,33 M', status: 'Cocok' },
+              { label: 'Utang BPJS', value: 'Rp 415 jt', status: 'Cocok' },
+              { label: 'Bank payroll', value: 'Rp 11,98 M', status: 'Selisih Rp 0' },
+            ].map((row) => (
+              <div
+                key={row.label}
+                className="flex items-center justify-between rounded-2xl border border-white/70 bg-white/50 px-3 py-2"
+              >
+                <span className="text-[11.5px] text-ink-soft">{row.label}</span>
+                <span className="flex items-center gap-2 text-[11.5px] font-medium text-ink">
+                  {row.value}
+                  <StatusPill status="Selesai" />
+                </span>
+              </div>
+            ))}
+          </div>
+          <p className="mt-3 text-[10.5px] text-muted">
+            Jurnal dikirim otomatis per cost center. Rekonsiliasi terakhir 02 Nov 2026.
+          </p>
+        </Panel>
+      </div>
+    </div>
+  )
+}
