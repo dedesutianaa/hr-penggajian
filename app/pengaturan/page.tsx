@@ -114,3 +114,119 @@ export default async function SettingsPage() {
                   <Table head={['Aturan', 'Versi', 'Efektif', 'Pemilik', 'Status', '']} minWidth="min-w-[680px]">
                     {rules.map((rule) => (
                       <Row key={rule.name}>
+                        <Cell className="text-[12px] font-medium text-ink">{rule.name}</Cell>
+                        <Cell className="font-mono text-[10.5px] text-ink-soft">{rule.version}</Cell>
+                        <Cell className="text-[11px] whitespace-nowrap text-ink-soft">{rule.effective}</Cell>
+                        <Cell className="text-[11px] text-ink-soft">{rule.owner}</Cell>
+                        <Cell>
+                          <StatusPill status={rule.status} />
+                        </Cell>
+                        <Cell className="w-24">
+                          <button
+                            type="button"
+                            className="focus-ring rounded-full border border-white/80 bg-white/70 px-2.5 py-1 text-[10px] font-medium text-ink-soft"
+                          >
+                            Riwayat
+                          </button>
+                        </Cell>
+                      </Row>
+                    ))}
+                  </Table>
+                </div>
+              ),
+            },
+            {
+              id: 'akses',
+              label: 'Peran & akses',
+              content: (
+                <div>
+                  <div className="mb-3 flex items-center gap-2 rounded-2xl bg-white/60 px-3 py-2 text-[10.5px] text-muted">
+                    <KeyRound className="size-3.5" />
+                    RBAC plus atribut entitas, negara, dan organisasi. Field-level security untuk gaji, ID nasional, dan data
+                    kesehatan.
+                  </div>
+                  <Table head={['Izin', ...roles]} minWidth="min-w-[640px]">
+                    {permissions.map((permission) => (
+                      <Row key={permission.label}>
+                        <Cell className="text-[11.5px] font-medium text-ink">{permission.label}</Cell>
+                        {permission.allow.map((allowed, index) => (
+                          <Cell key={`${permission.label}-${roles[index]}`}>
+                            {allowed ? (
+                              <span className="grid size-5 place-items-center rounded-full bg-lime text-ink">
+                                <Check className="size-3" strokeWidth={3} />
+                              </span>
+                            ) : (
+                              <span className="text-[11px] text-muted">—</span>
+                            )}
+                          </Cell>
+                        ))}
+                      </Row>
+                    ))}
+                  </Table>
+                  <p className="mt-3 text-[10px] text-muted">
+                    Persetujuan payroll tidak diberikan ke peran mana pun secara default — selalu dua orang berbeda
+                    (maker-checker).
+                  </p>
+                </div>
+              ),
+            },
+            {
+              id: 'integrasi',
+              label: 'Integrasi',
+              content: (
+                <div className="grid gap-2 md:grid-cols-2">
+                  {integrations.map((integration) => (
+                    <div
+                      key={integration.name}
+                      className="flex items-start gap-3 rounded-[18px] border border-white/70 bg-white/50 p-3"
+                    >
+                      <span className="grid size-8 shrink-0 place-items-center rounded-full bg-white/80 text-ink-soft">
+                        <Plug className="size-3.5" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className="text-[12px] font-semibold text-ink">{integration.name}</p>
+                          <StatusPill status={integration.status} />
+                        </div>
+                        <p className="text-[10.5px] text-muted">
+                          {integration.vendor} · {integration.detail}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ),
+            },
+            {
+              id: 'lokalisasi',
+              label: 'Lokalisasi',
+              content: (
+                <div className="grid gap-2 md:grid-cols-2">
+                  {[
+                    { label: 'Bahasa', value: 'Bahasa Indonesia · English', detail: 'Preferensi per pengguna' },
+                    { label: 'Zona waktu', value: 'Asia/Jakarta (GMT+7)', detail: 'Per lokasi kerja' },
+                    { label: 'Mata uang', value: 'IDR · SGD · MYR', detail: 'Kurs tercatat & bisa diaudit' },
+                    { label: 'Format tanggal', value: 'DD MMM YYYY', detail: 'Mengikuti locale' },
+                    { label: 'Data residency', value: 'Indonesia (utama)', detail: 'Dukungan sejak arsitektur awal' },
+                    { label: 'Aksesibilitas', value: 'WCAG 2.1 AA', detail: 'Kontras, fokus, dan label ARIA' },
+                  ].map((item) => (
+                    <SubPanel key={item.label}>
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <p className="text-[10px] tracking-[0.08em] text-muted uppercase">{item.label}</p>
+                          <p className="mt-1 text-[12px] font-semibold text-ink">{item.value}</p>
+                          <p className="text-[10px] text-muted">{item.detail}</p>
+                        </div>
+                        <Globe2 className="size-4 text-ink/30" />
+                      </div>
+                    </SubPanel>
+                  ))}
+                </div>
+              ),
+            },
+          ]}
+        />
+      </Panel>
+    </div>
+  )
+}
