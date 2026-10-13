@@ -82,3 +82,88 @@ export default async function RecruitmentPage() {
               <li
                 key={interview.id}
                 className="flex items-center gap-3 rounded-[18px] border border-white/70 bg-white/50 p-2.5"
+              >
+                <span className="grid w-12 shrink-0 place-items-center rounded-xl bg-ink py-1.5 text-[10.5px] font-semibold text-lime">
+                  {interview.time}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[12px] font-medium text-ink">{interview.name}</p>
+                  <p className="truncate text-[10px] text-muted">
+                    {interview.role} · {interview.panel}
+                  </p>
+                </div>
+                <Pill variant="outline" className="px-2 py-0.5 text-[9.5px]">
+                  {interview.mode}
+                </Pill>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <SubPanel>
+              <p className="text-[10px] tracking-[0.08em] text-muted uppercase">Time to hire</p>
+              <p className="mt-1 text-lg font-semibold">34 hari</p>
+              <Progress value={68} tone="lime" className="mt-1.5" />
+            </SubPanel>
+            <SubPanel>
+              <p className="text-[10px] tracking-[0.08em] text-muted uppercase">Offer accept</p>
+              <p className="mt-1 text-lg font-semibold">82%</p>
+              <Progress value={82} tone="mint" className="mt-1.5" />
+            </SubPanel>
+          </div>
+        </Panel>
+      </div>
+
+        <Panel>
+          <PanelHead
+            title="Pipeline kandidat"
+            hint="Semua requisition · kandidat per tahap"
+            action={
+              <Pill variant="outline" className="px-2 py-1 text-[10px]">
+                {candidates.length} kandidat
+              </Pill>
+            }
+          />
+          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {requisitions.map((req) => {
+              const stageCandidates = candidates.filter((c) => c.stageId === req.id)
+              return (
+                <div
+                  key={req.id}
+                  className="rounded-[20px] border border-white/70 bg-white/40 p-2.5"
+                >
+                  <div className="flex items-center justify-between px-1 pb-2">
+                    <p className="text-[11px] font-semibold text-ink">{req.role}</p>
+                    <span className="rounded-full bg-white/80 px-1.5 py-0.5 text-[9.5px] font-medium text-ink-soft">
+                      {stageCandidates.length}
+                    </span>
+                  </div>
+                  <ul className="space-y-2">
+                    {stageCandidates.map((candidate) => (
+                      <li
+                        key={candidate.id}
+                        className="rounded-[16px] border border-white/80 bg-white/75 p-2.5 shadow-[0_1px_2px_rgba(20,30,20,0.04)]"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <p className="truncate text-[11.5px] font-semibold text-ink">{candidate.name}</p>
+                            <p className="truncate text-[9.5px] text-muted">{candidate.role}</p>
+                          </div>
+                          <span className="rounded-full bg-lime px-1.5 py-0.5 text-[9px] font-semibold text-ink">
+                            {candidate.score}
+                          </span>
+                        </div>
+                        <div className="mt-2 flex items-center justify-between">
+                          <span className="text-[9px] text-muted">{candidate.source}</span>
+                          <span className="text-[9px] font-medium text-ink-soft">Scorecard</span>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )
+            })}
+          </div>
+        </Panel>
+    </div>
+  )
+}
