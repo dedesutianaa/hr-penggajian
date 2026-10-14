@@ -142,3 +142,148 @@ export default async function SelfServicePage() {
             <div>
               <p className="text-[10px] tracking-[0.12em] text-white/50 uppercase">Slip terakhir</p>
               <p className="mt-1 text-[12px] text-white/70">
+                {payslips[0]?.period ?? '—'} · dibayar 28 Okt
+              </p>
+            </div>
+            <span className="grid size-8 place-items-center rounded-full bg-white/10 text-lime">
+              <FileText className="size-4" />
+            </span>
+          </div>
+          <p className="mt-4 text-[30px] leading-none font-semibold tracking-[-0.04em]">
+            {formatIDR(payslips[0]?.net ?? 35820000)}
+          </p>
+          <p className="mt-1 text-[10.5px] text-white/50">
+            Take home pay · gross {formatIDR(payslips[0]?.gross ?? 42000000)}
+          </p>
+          <div className="mt-4 flex items-center gap-2">
+            {payslips[0] ? (
+              <Link
+                href={`/slip-gaji/${payslips[0].id}`}
+                className="focus-ring inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-lime px-3 py-2 text-[11px] font-semibold text-ink"
+              >
+                Lihat slip <ArrowUpRight className="size-3" />
+              </Link>
+            ) : (
+              <button disabled className="focus-ring inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-lime px-3 py-2 text-[11px] font-semibold text-ink opacity-50 cursor-not-allowed">
+                Slip tidak tersedia <ArrowUpRight className="size-3" />
+              </button>
+            )}
+            <button
+              type="button"
+              aria-label="Unduh slip terakhir"
+              className="focus-ring grid size-9 place-items-center rounded-full bg-white/10 text-white"
+            >
+              <Download className="size-3.5" />
+            </button>
+          </div>
+          <p className="mt-3 flex items-center gap-1.5 text-[9.5px] text-white/40">
+            <Lock className="size-3" /> Hanya Anda yang dapat mengakses slip ini
+          </p>
+        </Panel>
+
+        <Panel className="lg:col-span-4">
+          <PanelHead title="Saldo cuti" hint="Tahun 2026 · reset 1 Januari" action={<Pill variant="lime" className="px-2 py-1 text-[10px]">12 hari</Pill>} />
+          <div className="mt-4 flex items-center gap-4">
+            <Donut value={75} size={88} strokeWidth={9} label={<span className="text-[14px]">75%</span>} />
+            <div className="flex-1 space-y-2">
+              {leaveBalances.slice(0, 3).map((balance) => (
+                <div key={balance.id}>
+                  <div className="flex items-center justify-between text-[10px]">
+                    <span className="text-ink-soft">{balance.typeName}</span>
+                    <span className="text-muted">
+                      {balance.total - balance.used}/{balance.total}
+                    </span>
+                  </div>
+                  <Progress
+                    value={((balance.total - balance.used) / balance.total) * 100}
+                    tone={balance.typeName?.toLowerCase().includes('tahunan') ? 'lime' : 'mint'}
+                    className="mt-1"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+          <button
+            type="button"
+            className="focus-ring mt-4 w-full rounded-full bg-ink px-3 py-2 text-[11px] font-medium text-white"
+          >
+            Ajukan cuti
+          </button>
+        </Panel>
+
+        <Panel className="lg:col-span-4">
+          <PanelHead title="Permintaan aktif" hint="2 menunggu, 1 selesai" />
+          <ul className="mt-3 space-y-2">
+            {myRequests.slice(0, 3).map((request) => (
+              <li
+                key={request.id}
+                className="flex items-center justify-between gap-2 rounded-2xl border border-white/70 bg-white/50 px-3 py-2"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-[11.5px] font-medium text-ink">{request.type}</p>
+                  <p className="truncate text-[10px] text-muted">
+                    {request.period} · {request.id}
+                  </p>
+                </div>
+                <StatusPill status={request.status} />
+              </li>
+            ))}
+          </ul>
+          <div className="mt-3 flex items-start gap-2 rounded-2xl bg-lime/40 px-3 py-2 text-[10px] leading-relaxed text-ink-soft">
+            <ShieldCheck className="mt-0.5 size-3.5 shrink-0" />
+            Perubahan rekening bank memerlukan verifikasi tambahan dan approval HR Ops.
+          </div>
+        </Panel>
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-12">
+        <Panel className="lg:col-span-7">
+          <PanelHead title="Permintaan saya" hint="6 bulan terakhir" />
+          <div className="mt-3">
+            <Table head={['ID', 'Jenis', 'Periode', 'Status']} minWidth="min-w-[480px]">
+              {myRequests.map((request) => (
+                <Row key={request.id}>
+                  <Cell className="text-[11px] font-medium text-ink">{request.id}</Cell>
+                  <Cell className="text-[11.5px] text-ink-soft">{request.type}</Cell>
+                  <Cell className="text-[11px] whitespace-nowrap text-ink-soft">{request.period}</Cell>
+                  <Cell>
+                    <StatusPill status={request.status} />
+                  </Cell>
+                </Row>
+              ))}
+            </Table>
+          </div>
+        </Panel>
+
+        <Panel className="lg:col-span-5">
+          <PanelHead title="Dokumen saya" hint="Akses pribadi · terenkripsi" />
+          <ul className="mt-3 space-y-2">
+            {myDocuments.map((document) => (
+              <li
+                key={document.name}
+                className="flex items-center gap-2.5 rounded-2xl border border-white/70 bg-white/50 px-3 py-2"
+              >
+                <span className="grid size-7 shrink-0 place-items-center rounded-full bg-white/80 text-ink-soft">
+                  <FileText className="size-3.5" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[11.5px] font-medium text-ink">{document.name}</p>
+                  <p className="text-[10px] text-muted">{document.type}</p>
+                </div>
+                <StatusPill status={document.status} />
+              </li>
+            ))}
+          </ul>
+          <SubPanel className="mt-3">
+            <p className="text-[10px] tracking-[0.08em] text-muted uppercase">Data pribadi</p>
+            <p className="mt-1 text-[10.5px] leading-relaxed text-ink-soft">
+              Anda dapat meminta akses, koreksi, atau penghapusan data sesuai UU PDP. Permintaan diproses DPO dengan jejak
+              lengkap.
+            </p>
+            <p className="mt-1 text-[10px] text-muted">Terakhir diperbarui {formatDate('2026-11-18')}</p>
+          </SubPanel>
+        </Panel>
+      </div>
+    </div>
+  )
+}
