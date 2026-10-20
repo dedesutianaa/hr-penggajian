@@ -152,3 +152,162 @@ Data karyawan tersebar di spreadsheet dan sistem lokal tiap negara. Payroll dike
 | RC-05 | Retensi dan penghapusan data kandidat sesuai UU PDP | P1 |
 | RC-06 | Referral dan mobilitas internal | P2 |
 
+### 7.6 Performance, Kompensasi, Benefit, Expense
+
+| ID | Kebutuhan | P |
+| --- | --- | --- |
+| PF-01 | Tujuan/OKR, check-in, review berkala, umpan balik 360 | P1 |
+| PF-02 | Kalibrasi, 9-box, performance improvement plan terdokumentasi | P1 |
+| PF-03 | Suksesi, talent review, framework kompetensi | P2 |
+| CP-01 | Grade, salary band, compa-ratio | P1 |
+| CP-02 | Siklus merit/bonus: anggaran per manajer, rekomendasi, approval; hasil langsung masuk payroll | P1 |
+| CP-03 | Total reward statement | P1 |
+| CP-04 | Benchmark pasar dan analisis kesetaraan upah | P2 |
+| BX-01 | Enrolment benefit (asuransi, pensiun), kelayakan, dependen, open enrolment; kontribusi dan potongan ke payroll | P1 |
+| BX-02 | Klaim biaya dengan OCR struk, kebijakan per grade/negara, pembayaran via payroll atau AP | P1 |
+| BX-03 | Perjalanan dinas, uang muka, benefit fleksibel | P2 |
+
+### 7.7 Self-Service, Workflow, Helpdesk, Analitik
+
+| ID | Kebutuhan | P |
+| --- | --- | --- |
+| SS-01 | Self-service karyawan: profil, slip, cuti, absensi, dokumen, permintaan surat; perubahan data sensitif lewat approval | P0 |
+| SS-02 | Self-service manajer: inbox approval, data tim, transaksi untuk bawahan | P0 |
+| SS-03 | Web responsif penuh; notifikasi email, push, Teams/Slack. Aplikasi native iOS/Android di P1 | P0 |
+| SS-04 | Case management HR: tiket, SLA, knowledge base | P1 |
+| SS-05 | Asisten AI untuk pertanyaan kebijakan; hanya dengan sumber dokumen yang dikutip, karena jawaban salah soal gaji atau hak kerja berisiko hukum | P2 |
+| WF-01 | Engine workflow tanpa kode: kondisi, berjenjang, paralel, delegasi, SLA, eskalasi | P0 |
+| WF-02 | Kebijakan berbeda per negara, entitas, dan grup karyawan | P0 |
+| WF-03 | Perubahan konfigurasi (aturan payroll, workflow) lewat lingkungan uji dan approval sebelum produksi | P0 |
+| WF-04 | Template surat dan kontrak dengan variabel; tanda tangan elektronik sesuai regulasi lokal | P1 |
+| AN-01 | Dashboard headcount, biaya tenaga kerja, turnover, absensi, cuti, lembur | P0 |
+| AN-02 | Row-level security: manajer hanya melihat timnya, HRBP hanya cakupannya | P0 |
+| AN-03 | Report builder self-service; ekspor terjadwal; feed ke data warehouse | P1 |
+| AN-04 | Workforce planning: anggaran headcount vs aktual | P1 |
+| AN-05 | Prediksi attrition: butuh data bersih beberapa tahun, jangan dijanjikan sebelum itu | P2 |
+
+## 8. Kebutuhan Non-Fungsional, Keamanan, Kepatuhan
+
+**Keamanan**
+
+- SSO (SAML/OIDC); MFA wajib untuk HR, Payroll, dan admin.
+- RBAC plus atribut (entitas, negara, organisasi); field-level security untuk gaji, ID nasional, data kesehatan.
+- Akses darurat (break-glass) hanya dengan persetujuan dan log.
+- Enkripsi in transit dan at rest, kunci dikelola terpisah. Data produksi tidak boleh disalin ke lingkungan dev/test tanpa anonimisasi.
+- Audit log immutable: siapa, apa, kapan, nilai sebelum dan sesudah, termasuk siapa yang melihat data gaji. Admin aplikasi tidak bisa mengubah atau menghapusnya.
+
+**Privasi dan kepatuhan**
+
+- UU PDP Indonesia (UU No. 27 Tahun 2022), GDPR jika ada karyawan di UE, dan hukum lokal tiap negara.
+- Data residency harus didukung arsitektur sejak awal; menambahkannya belakangan sangat mahal.
+- Hak subjek data (akses, koreksi, penghapusan), kebijakan retensi dan anonimisasi, DPIA sebelum go-live, DPO ditunjuk.
+- Kontrol SOX jika perusahaan tercatat di bursa AS. Target sertifikasi ISO 27001 dan SOC 2 untuk platform dan vendor.
+
+**Performa dan ketersediaan (hipotesis, validasi dengan Engineering)**
+
+- Ketersediaan 99,9%, dan 99,95% pada jendela payroll. RPO maksimal 15 menit, RTO maksimal 4 jam, uji DR tahunan.
+- Halaman p95 maksimal 2 detik. Payroll 20.000 karyawan selesai maksimal 60 menit. Skala sampai 50.000 karyawan.
+
+**Lokalisasi, aksesibilitas, migrasi**
+
+- Multi-bahasa, zona waktu, mata uang, format tanggal; WCAG 2.1 AA.
+- Aturan negara baru ditambahkan lewat konfigurasi, bukan rilis kode, sejauh mungkin.
+- Migrasi: alat impor dengan validasi dan rekonsiliasi per karyawan; minimal 3 siklus parallel run per negara sebelum cutover.
+
+## 9. Integrasi
+
+| Sistem | Tujuan | P |
+| --- | --- | --- |
+| Penyedia identitas | SSO, provisioning dan deprovisioning (SCIM) | P0 |
+| ERP/GL | Jurnal payroll, cost center, entitas | P0 |
+| Bank | File pembayaran gaji (P0), integrasi langsung/API (P1) | P0/P1 |
+| Otoritas pajak dan jaminan sosial | File laporan (P0), e-filing langsung (P1) | P0/P1 |
+| Provider payroll lokal | Kalkulasi negara non-inti (hybrid) | P1 (P0 di Fase 2) |
+| Perangkat absensi, kalender/email, Teams/Slack | Kehadiran, penjadwalan, notifikasi | P1 |
+| E-signature, penyedia asuransi/benefit, data warehouse | Kontrak, enrolment, analitik | P1 |
+| LMS, job board, background check | Learning, rekrutmen | P2 |
+
+## 10. User Stories Utama
+
+1. Sebagai karyawan, saya ingin melihat slip gaji dan mengajukan cuti dari satu tempat agar tidak perlu menghubungi HR.
+2. Sebagai karyawan, saya ingin mengubah rekening bank dengan verifikasi tambahan agar gaji tidak bisa dialihkan orang lain.
+3. Sebagai manajer, saya ingin menyetujui cuti, lembur, dan promosi dari satu inbox agar tidak ada approval yang tercecer di email.
+4. Sebagai payroll specialist, saya ingin melihat variansi dan anomali sebelum kunci periode agar kesalahan tertangkap sebelum uang keluar.
+5. Sebagai payroll specialist, saya ingin menjalankan simulasi tanpa efek ke data produksi agar aturan baru teruji.
+6. Sebagai Finance controller, saya ingin jurnal payroll otomatis per cost center agar close bulanan tidak butuh rekonsiliasi manual.
+7. Sebagai HRBP, saya ingin melihat riwayat posisi dan gaji karyawan pada tanggal tertentu agar keputusan dan audit memakai data yang benar pada waktunya.
+8. Sebagai HR Ops, saya ingin impor perubahan data massal dengan validasi agar kesalahan terdeteksi sebelum tersimpan.
+9. Sebagai DPO, saya ingin memproses permintaan akses atau penghapusan data karyawan dengan jejak lengkap agar kepatuhan bisa dibuktikan.
+10. Sebagai auditor, saya ingin akses read-only ke log perubahan data gaji agar pengujian kontrol tidak bergantung pada tim HR.
+11. Sebagai IT admin, saya ingin akun dinonaktifkan otomatis saat karyawan keluar agar tidak ada akses tertinggal.
+12. Sebagai karyawan baru, saya ingin menyelesaikan dokumen, data bank, dan data pajak sebelum hari pertama agar gaji pertama tidak terlambat.
+
+## 11. Acceptance Criteria Kritis
+
+1. **Maker-checker.** Given Payroll Specialist A mengubah komponen gaji seorang karyawan, when A mencoba menyetujui payroll periode itu, then sistem menolak dan meminta penyetuju lain.
+2. **Kunci periode.** Given payroll Maret terkunci, when ada perubahan data yang memengaruhi Maret, then hasil Maret tidak berubah dan selisih dihitung sebagai retro di periode terbuka berikutnya.
+3. **Effective dating.** Given kenaikan gaji berlaku 1 Februari tetapi diinput 15 Maret, when payroll Maret dijalankan, then selisih Februari muncul sebagai komponen retro dengan rincian yang bisa diaudit.
+4. **Anomali.** Given hasil kalkulasi memuat net negatif atau lonjakan di atas ambang, when payroll direview, then item ditandai dan periode tidak bisa dikunci sebelum ada alasan penyelesaian tercatat.
+5. **Akses data.** Given manajer membuka profil bawahan langsung, when halaman dimuat, then gaji pokok dan data kesehatan tidak tampil tanpa hak eksplisit; akses ke karyawan di luar timnya lewat URL atau API langsung juga ditolak.
+6. **Offboarding.** Given tanggal akhir kerja 30 April, when tanggal itu berlalu, then akun nonaktif di semua sistem terhubung dalam maksimal 1 jam dan final pay terpicu.
+7. **Saldo cuti.** Given saldo cuti 2 hari, when karyawan mengajukan 3 hari, then sistem menolak atau menawarkan sisa sebagai cuti tanpa gaji sesuai kebijakan entitas, lengkap dengan dampak ke gaji.
+8. **Audit.** Given pengguna HR melihat atau mengubah gaji, when auditor menarik log, then identitas, waktu, nilai sebelum dan sesudah, serta alasan tampil, dan log tidak bisa diubah.
+
+## 12. Success Metrics
+
+| Metrik | Target (hipotesis) | Jenis | Evaluasi |
+| --- | --- | --- | --- |
+| Adopsi self-service aktif bulanan | 85% karyawan | Leading | 60 hari setelah go-live |
+| Cuti diajukan lewat sistem | 95% | Leading | 30 hari |
+| Approval manajer dalam 2 hari kerja | 90% | Leading | 30 hari |
+| Selisih parallel run vs sistem lama setelah dijelaskan | maksimal 0,1% | Leading | Sebelum cutover |
+| Record migrasi gagal validasi | di bawah 0,5% | Leading | Per gelombang migrasi |
+| Akurasi payroll (slip tanpa koreksi) | minimal 99,8% | Lagging | 6 bulan |
+| Durasi payroll close | turun 50% dari baseline | Lagging | 6 bulan |
+| Tiket HR per 100 karyawan | turun 40% | Lagging | 12 bulan |
+| Selisih headcount HR vs Finance | 0 | Lagging | Bulanan |
+| Temuan audit mayor | 0 | Lagging | Audit pertama |
+| Kepuasan pengguna (CSAT) | minimal 4 dari 5 | Lagging | 6 bulan |
+
+## 13. Fase dan Timeline (hipotesis, wajib divalidasi estimasi Engineering)
+
+| Fase | Periode | Isi |
+| --- | --- | --- |
+| 0 | Bulan 0 sampai 3 | Discovery, baseline, keputusan build/buy, standardisasi proses global, threat model dan DPIA, pilih negara pilot, sponsor dan anggaran |
+| 1 | Bulan 3 sampai 12 | Platform keamanan, Core HR, organisasi, workflow, self-service, cuti, kehadiran, payroll Indonesia (3 siklus parallel run), integrasi SSO/GL/bank, analitik dasar |
+| 2 | Bulan 12 sampai 20 | Payroll negara 2 sampai 4 (hybrid), onboarding/offboarding penuh, ATS, benefit, expense, helpdesk, analitik penuh |
+| 3 | Bulan 20 sampai 30 | Performance, kompensasi, integrasi learning, workforce planning |
+| 4 | Bulan 30+ | Global mobility, prediktif, asisten AI, benefit fleksibel |
+
+**Batasan keras:** hindari go-live payroll pada Desember sampai Januari (penutupan tahun pajak, THR dan bonus, bukti potong). Jadwalkan cutover di awal kuartal setelah close bulanan. Setiap penambahan scope harus disertai pengurangan scope atau perpanjangan timeline.
+
+## 14. Risiko
+
+| Risiko | Dampak | Mitigasi |
+| --- | --- | --- |
+| Scope creep: semua fitur dituntut sekaligus | Timeline molor, kualitas turun | Fase tegas; tiap tambahan diimbangi pengurangan atau perpanjangan |
+| Aturan pajak dan jaminan sosial berubah | Salah hitung, denda | Aturan berversi dan konfigurabel; konsultan pajak lokal meninjau tiap perubahan; provider lokal untuk negara non-inti |
+| Data migrasi kotor | Salah bayar sejak siklus pertama | Pembersihan data di Fase 0 dan 1; 3 siklus parallel run; rekonsiliasi per karyawan |
+| Kebocoran data gaji atau pribadi | Sanksi UU PDP/GDPR, reputasi, kepercayaan karyawan | Least privilege, field-level security, log akses, pentest sebelum go-live |
+| Negara atau entitas menolak standardisasi | Sistem penuh pengecualian dan sulit dirawat | Sponsor eksekutif; kebijakan global dengan variasi lokal yang disetujui dan terdokumentasi |
+| Adopsi manajer rendah | Approval macet, HR kembali ke email | Inbox approval cepat, SLA dan eskalasi, pelatihan, metrik adopsi per unit |
+| Hukum ketenagakerjaan atau kewajiban konsultasi karyawan (mis. works council) | Peluncuran tertunda atau ditolak | Libatkan Legal dan perwakilan karyawan sejak Fase 0 |
+| Salah konfigurasi oleh admin HR | Payroll salah secara massal | Lingkungan uji, approval perubahan konfigurasi, simulasi sebelum produksi |
+| Ketergantungan pada satu vendor atau satu orang | Lock-in, bus factor | API terbuka, ekspor data penuh, dokumentasi, klausul exit |
+| Kinerja buruk di jendela payroll | Gaji telat dibayar | Uji beban 2x skala, monitoring, prosedur fallback manual |
+
+## 15. Open Questions
+
+| # | Pertanyaan | Pemilik | Sifat |
+| --- | --- | --- | --- |
+| 1 | Build, buy, atau hybrid? Siapa sponsor eksekutif dan berapa anggarannya? | CHRO, CFO, CTO | Blocking |
+| 2 | Daftar negara, entitas, dan jumlah karyawan per negara; mana yang masuk 12 bulan pertama? | HR, Finance | Blocking |
+| 3 | Ada kewajiban data residency? Apakah perusahaan tercatat di bursa AS (SOX)? | Legal, Finance | Blocking |
+| 4 | Sistem HR dan payroll yang ada sekarang: vendor per negara, kapan kontrak berakhir? | IT, Procurement | Blocking |
+| 5 | Siapa pemilik tunggal proses payroll global dan kebijakan lintas negara? | CHRO, CFO | Blocking |
+| 6 | Baseline: koreksi payroll, jam kerja HR Ops, jumlah tiket HR | HR Ops, Payroll | Blocking untuk finalisasi target |
+| 7 | Aplikasi native atau web responsif sudah cukup? | Design, Engineering | Non-blocking |
+| 8 | Perangkat absensi apa yang dipakai di lokasi shift? | IT, Fasilitas | Non-blocking |
+| 9 | Kebijakan penggunaan AI pada data karyawan? | Legal, DPO | Non-blocking |
+| 10 | Penyedia e-signature yang sah di tiap negara? | Legal | Non-blocking |
+| 11 | Apakah kontraktor dan EOR masuk ruang lingkup di tahap lanjut? | HR, Legal | Non-blocking |
