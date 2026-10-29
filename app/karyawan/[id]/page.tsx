@@ -206,3 +206,212 @@ export default async function EmployeeDetailPage({
                               </span>
                             </div>
                             <p className="mt-0.5 text-[11.5px] text-ink-soft">{item.detail ?? '-'}</p>
+                            <p className="mt-1 text-[10.5px] text-muted">
+                              {item.reason ?? '-'} · diinput {formatDate(String(item.inputDate))} oleh {item.actor ?? '-'}
+                            </p>
+                          </div>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                ),
+              },
+              {
+                id: 'dokumen',
+                label: 'Dokumen',
+                badge: '4',
+                content: (
+                  <Table head={['Dokumen', 'Jenis', 'Diperbarui', 'Kedaluwarsa', 'Status', '']} minWidth="min-w-[620px]">
+                    {[
+                      { name: 'Kontrak kerja PKWTT', type: 'Kontrak', updated: '2025-04-01', expiry: '2027-03-31', status: 'Berlaku' },
+                      { name: 'KTP & NPWP', type: 'Identitas', updated: '2024-08-12', expiry: '—', status: 'Terverifikasi' },
+                      { name: 'Kartu BPJS Kesehatan', type: 'Jaminan sosial', updated: '2026-01-04', expiry: '2026-12-31', status: 'Segera kedaluwarsa' },
+                      { name: 'Sertifikasi CHRP', type: 'Sertifikasi', updated: '2023-06-19', expiry: '2026-06-19', status: 'Kedaluwarsa' },
+                    ].map((document) => (
+                      <Row key={document.name}>
+                        <Cell>
+                          <span className="flex items-center gap-2 text-[12px] font-medium text-ink">
+                            <FileText className="size-3.5 text-muted" /> {document.name}
+                          </span>
+                        </Cell>
+                        <Cell className="text-[11.5px] text-ink-soft">{document.type}</Cell>
+                        <Cell className="text-[11.5px] whitespace-nowrap text-ink-soft">
+                          {formatDate(document.updated)}
+                        </Cell>
+                        <Cell className="text-[11.5px] whitespace-nowrap text-ink-soft">
+                          {document.expiry === '—' ? '—' : formatDate(document.expiry)}
+                        </Cell>
+                        <Cell>
+                          <StatusPill status={document.status} />
+                        </Cell>
+                        <Cell className="w-10">
+                          <button
+                            type="button"
+                            aria-label={`Unduh ${document.name}`}
+                            className="focus-ring grid size-7 place-items-center rounded-full text-muted hover:bg-ink hover:text-white"
+                          >
+                            <Download className="size-3.5" />
+                          </button>
+                        </Cell>
+                      </Row>
+                    ))}
+                  </Table>
+                ),
+              },
+              {
+                id: 'cuti',
+                label: 'Cuti',
+                content: (
+                  <div className="space-y-3">
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      {leaveBalances.map((balance) => (
+                        <SubPanel key={balance.id}>
+                          <div className="flex items-center justify-between text-[11px]">
+                            <span className="font-medium text-ink">{balance.typeName}</span>
+                            <span className="text-muted">
+                              {balance.total - balance.used} / {balance.total} hari
+                            </span>
+                          </div>
+                          <Progress
+                            value={((balance.total - balance.used) / balance.total) * 100}
+                            tone="mint"
+                            className="mt-2"
+                          />
+                        </SubPanel>
+                      ))}
+                    </div>
+                    <Table head={['Jenis', 'Periode', 'Hari', 'Status']} minWidth="min-w-[420px]">
+                      {leaveRequests.map((leave) => (
+                        <Row key={leave.id}>
+                          <Cell className="text-[12px] font-medium text-ink">{leave.typeName}</Cell>
+                          <Cell className="text-[11.5px] text-ink-soft">
+                            {formatDate(String(leave.startDate))} – {formatDate(String(leave.endDate))}
+                          </Cell>
+                          <Cell className="text-[11.5px] text-ink-soft">{leave.days} hari</Cell>
+                          <Cell>
+                            <StatusPill status={leave.status} />
+                          </Cell>
+                        </Row>
+                      ))}
+                    </Table>
+                  </div>
+                ),
+              },
+              {
+                id: 'payroll',
+                label: 'Payroll',
+                content: (
+                  <Table head={['Periode', 'Gross', 'Potongan', 'Net', 'Status', '']} minWidth="min-w-[560px]">
+                    {payslips.map((slip) => (
+                      <Row key={slip.id}>
+                        <Cell className="text-[12px] font-medium text-ink">{slip.period}</Cell>
+                        <Cell className="text-[11.5px] text-ink-soft">{formatIDR(slip.gross)}</Cell>
+                        <Cell className="text-[11.5px] text-ink-soft">{formatIDR(slip.deduction)}</Cell>
+                        <Cell className="text-[12px] font-semibold text-ink">{formatIDR(slip.net)}</Cell>
+                        <Cell>
+                          <StatusPill status={slip.status} />
+                        </Cell>
+                        <Cell className="w-10">
+                          <Link
+                            href={`/slip-gaji/${slip.id}`}
+                            aria-label={`Lihat slip ${slip.period}`}
+                            className="focus-ring grid size-7 place-items-center rounded-full text-muted hover:bg-ink hover:text-white"
+                          >
+                            <ArrowUpRight className="size-3.5" />
+                          </Link>
+                        </Cell>
+                      </Row>
+                    ))}
+                  </Table>
+                ),
+              },
+              {
+                id: 'audit',
+                label: 'Audit',
+                content: (
+                  <div>
+                    <div className="mb-3 flex items-center gap-2 rounded-2xl bg-white/60 px-3 py-2 text-[10.5px] text-muted">
+                      <Lock className="size-3.5" /> Log immutable — tidak dapat diubah atau dihapus, termasuk oleh admin.
+                    </div>
+                    <Table head={['Waktu', 'Aktor', 'Aksi', 'Field', 'Alasan']} minWidth="min-w-[620px]">
+                      {auditLog.map((entry) => (
+                        <Row key={`${entry.at}-${entry.field}`}>
+                          <Cell className="text-[11px] whitespace-nowrap text-ink-soft">
+                            {new Date(entry.at).toLocaleString('id-ID')}
+                          </Cell>
+                          <Cell className="text-[11.5px] font-medium text-ink">{entry.actorName ?? '-'}</Cell>
+                          <Cell className="text-[11.5px] text-ink-soft">{entry.action}</Cell>
+                          <Cell className="text-[11.5px] text-ink-soft">{entry.field}</Cell>
+                          <Cell className="text-[11px] text-muted">{entry.reason ?? '-'}</Cell>
+                        </Row>
+                      ))}
+                    </Table>
+                  </div>
+                ),
+              },
+            ]}
+          />
+        </Panel>
+
+        <div className="space-y-3 lg:col-span-4">
+          <Panel>
+            <PanelHead title="Ringkasan" hint="Data per 22 November 2026" />
+            <dl className="mt-4 grid grid-cols-2 gap-3">
+              <Field label="Masa kerja" value={tenure(employee.joinDate ? String(employee.joinDate) : new Date().toISOString())} />
+              <Field label="Grade" value={employee.grade ?? '—'} />
+              <Field label="Tipe pekerja" value={employee.type} />
+              <Field label="Bergabung" value={formatDate(String(employee.joinDate))} />
+              <Field label="Manajer" value={manager?.name ?? '—'} />
+              <Field label="Negara" value={employee.country} />
+            </dl>
+          </Panel>
+
+          <Panel className="glass-dark text-white">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-[10px] font-medium tracking-[0.12em] text-white/50 uppercase">
+                  Kompensasi
+                </p>
+                <p className="mt-2 text-[26px] leading-none font-semibold tracking-[-0.03em]">
+                  {employee.currency === 'IDR' ? 'Rp ••••••••' : 'SGD •••••'}
+                </p>
+                <p className="mt-1 text-[11px] text-white/50">Gross bulanan · {employee.grade}</p>
+              </div>
+              <span className="grid size-8 place-items-center rounded-full bg-white/10 text-lime">
+                <Lock className="size-4" />
+              </span>
+            </div>
+            <p className="mt-4 text-[10.5px] leading-relaxed text-white/60">
+              Field-level security aktif. Gaji hanya terlihat oleh HR Payroll dan atasan langsung dengan hak eksplisit.
+            </p>
+            <button
+              type="button"
+              className="focus-ring mt-3 w-full rounded-full bg-lime px-3 py-2 text-[11px] font-semibold text-ink transition-colors hover:bg-lime-deep"
+            >
+              Minta akses sementara
+            </button>
+          </Panel>
+
+          <Panel>
+            <PanelHead title="Garis pelaporan" hint="Atasan dan bawahan" />
+            <div className="mt-3 space-y-2">
+              {manager ? (
+                <div className="flex items-center gap-2.5 rounded-2xl border border-white/70 bg-white/50 p-2.5">
+                  <Avatar name={manager.name} tone={(manager.tone as any) || 'mint'} size="sm" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[12px] font-medium text-ink">{manager.name}</p>
+                    <p className="truncate text-[10.5px] text-muted">Atasan · {manager.role}</p>
+                  </div>
+                  <BadgeCheck className="size-4 text-[#3f6b1e]" />
+                </div>
+              ) : null}
+              <p className="rounded-2xl bg-white/50 px-3 py-3 text-[11px] text-muted">
+                Tidak ada bawahan langsung tercatat.
+              </p>
+            </div>
+          </Panel>
+        </div>
+      </div>
+    </div>
+  )
+}
